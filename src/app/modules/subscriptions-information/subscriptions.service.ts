@@ -294,6 +294,7 @@ interface MyStripeSubscription extends Stripe.Subscription {
 
 export const saveSubscriptionToDB = async (sessionId: string) => {
     const session = await stripe.checkout.sessions.retrieve(sessionId);
+    
 
     if (!session || session.payment_status !== 'paid') {
         throw new AppError(StatusCodes.BAD_REQUEST, 'Payment not completed');
