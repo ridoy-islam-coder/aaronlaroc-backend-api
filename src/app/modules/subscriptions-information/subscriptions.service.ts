@@ -170,12 +170,13 @@ const subscriptionsFromDB = async (query: Record<string, unknown>): Promise<ISub
 
 
 export const createSubscriptionCheckoutSession = async (userId: string, packageId: string) => {
-    // 1️⃣ Check package exists
+   
     const packageDoc = await Package.findOne({ _id: packageId, status: 'active' });
     if (!packageDoc) throw new AppError(StatusCodes.NOT_FOUND, 'Package not found');
 
-    // 2️⃣ Find user
-    const user = await User.findById(userId).select('+stripeCustomerId');
+    // 2️⃣ Find user                   userId id
+    const user = await User.findById(userId.toString()).select('+stripeCustomerId');
+   
     if (!user) throw new AppError(StatusCodes.NOT_FOUND, 'User not found');
 
     // 3️⃣ Create stripe customer if missing
@@ -197,8 +198,12 @@ export const createSubscriptionCheckoutSession = async (userId: string, packageI
             userId: String(user._id), // MongoDB ObjectId string
             subscriptionId: String(packageDoc._id),
         },
-        success_url: `${config.backend_url}/api/v1/subscription/success?session_id={CHECKOUT_SESSION_ID}`,
-        cancel_url: `${config.backend_url}/api/v1/subscription/cancel`,
+     //    success_url: `${config.backend_url}/api/v1/success?session_id={CHECKOUT_SESSION_ID}`,
+     //    cancel_url: `${config.backend_url}/api/v1/cancel`,
+
+    // ✅ ঠিক করা হলো
+     success_url: `${config.backend_url}/success?session_id={CHECKOUT_SESSION_ID}`,
+     cancel_url: `${config.backend_url}/cancel?session_id={CHECKOUT_SESSION_ID}`,
     });
 
     return { url: session.url, sessionId: session.id };
@@ -293,8 +298,9 @@ interface MyStripeSubscription extends Stripe.Subscription {
 
 
 export const saveSubscriptionToDB = async (sessionId: string) => {
-    const session = await stripe.checkout.sessions.retrieve(sessionId);
-    
+  const session = await stripe.checkout.sessions.retrieve(sessionId);
+  
+
 
     if (!session || session.payment_status !== 'paid') {
         throw new AppError(StatusCodes.BAD_REQUEST, 'Payment not completed');
@@ -304,12 +310,22 @@ export const saveSubscriptionToDB = async (sessionId: string) => {
         throw new AppError(StatusCodes.BAD_REQUEST, 'Subscription not created yet');
     }
 
+
+        // ✅ এখানে বসাও
+    if (!session.metadata?.userId) {
+        throw new AppError(
+            StatusCodes.BAD_REQUEST,
+            'Stripe metadata missing. Please retry payment.'
+        );
+    }
+
     const userId = session.metadata?.userId;
+
     if (!userId || !Types.ObjectId.isValid(userId)) {
         throw new AppError(StatusCodes.UNAUTHORIZED, 'User not found');
     }
-
-    const user = await User.findById(userId);
+                                   //userId
+    const user = await User.findById(userId.toString());
     if (!user) throw new AppError(StatusCodes.UNAUTHORIZED, 'User not found');
 
     const stripeSubscriptionRaw =
@@ -362,6 +378,69 @@ export const saveSubscriptionToDB = async (sessionId: string) => {
 };
 
 
+
+// interface MyStripeSubscription {
+//   id: string;
+//   customer: string;
+//   current_period_start?: number;
+//   current_period_end?: number;
+//   status: string;
+// }
+
+// export const saveSubscriptionToDB = async (sessionId: string) => {
+//   const session = await stripe.checkout.sessions.retrieve(sessionId);
+
+//   if (!session || session.payment_status !== 'paid') {
+//     throw new AppError(StatusCodes.BAD_REQUEST, 'Payment not completed');
+//   }
+
+//   if (!session.subscription) {
+//     throw new AppError(StatusCodes.BAD_REQUEST, 'Subscription not created yet');
+//   }
+
+//   if (!session.metadata?.userId) {
+//     throw new AppError(
+//       StatusCodes.BAD_REQUEST,
+//       'Stripe metadata missing. Please retry payment.'
+//     );
+//   }
+
+//   const userId = session.metadata.userId;
+//   const user = await User.findById(userId);
+//   if (!user) throw new AppError(StatusCodes.UNAUTHORIZED, 'User not found');
+
+//   // Cast to MyStripeSubscription
+//   const stripeSubscriptionRaw =
+//     typeof session.subscription === 'string'
+//       ? await stripe.subscriptions.retrieve(session.subscription)
+//       : session.subscription;
+
+//   const stripeSubscription = stripeSubscriptionRaw as MyStripeSubscription;
+
+//   const currentPeriodStart = stripeSubscription.current_period_start
+//     ? new Date(stripeSubscription.current_period_start * 1000)
+//     : new Date();
+
+//   const currentPeriodEnd = stripeSubscription.current_period_end
+//     ? new Date(stripeSubscription.current_period_end * 1000)
+//     : new Date(currentPeriodStart.getTime() + 30 * 86400000);
+
+//   const subscription = await Subscription.create({
+//     stripeSubscriptionId: stripeSubscription.id,
+//     userId: user._id,
+//     package: session.metadata.subscriptionId,
+//     price: 0, // বা session.metadata.price
+//     currentPeriodStart,
+//     currentPeriodEnd,
+//     remaining: 30,
+//     status: 'active',
+//     customerId: stripeSubscription.customer,
+//   });
+
+//   await subscription.populate('package');
+
+//   return subscription;
+// };
 
 
 export const isSubscriptionActive = (sub: ISubscription) => {

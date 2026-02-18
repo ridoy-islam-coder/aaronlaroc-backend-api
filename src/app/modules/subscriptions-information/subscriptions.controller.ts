@@ -73,12 +73,10 @@ const updateSubscription = catchAsync(async (req, res) => {
 
 
 
-
-// Assuming you have OrderServices imported properly
 const orderCancel = catchAsync(async (req, res) => {
-     res.render('cancel');
+    const sessionId = req.query.session_id as string || 'N/A';
+    res.render('cancel', { sessionId });  // ✅ sessionId pass করো
 });
-
 
 
 
