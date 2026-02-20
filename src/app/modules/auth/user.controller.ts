@@ -7,6 +7,7 @@ import logger from "../../../helpers/logger";
 import { getErrorCount, incrementErrorCount } from "../../../helpers/errorCounter";
  import jwt from "jsonwebtoken";
  import { config } from './../../config/index';
+ import bcrypt from "bcryptjs";
 
 
 
@@ -26,13 +27,17 @@ export const registerUser = async (
   try {
     const user = await existingUser(req.body);
   
-    // Create JWT token
-    const token = jwt.sign(
-      { _id: user._id, email: user.email, role: user.role },
-      config.jwt_secret as string,
-      { expiresIn: "1d" } // Token valid 7 days
-    );
-
+       // password get করা
+      const { password } = req.body;
+     const isMatch = await bcrypt.compare(password, user.password);
+        if (!isMatch) {
+            throw new Error("Invalid password");
+        }
+    
+        const token = jwt.sign(
+            { userId: user._id, role: user.role },
+            config.jwt_secret as string, { expiresIn: "1d" }
+        );
 
     // return res.status(201).json({
     //   success: true,
@@ -44,7 +49,7 @@ export const registerUser = async (
     //     userPercentage: user.userPercentage
     //   }
     // });
-    return res.status(201).json({success: true,message: "User registered successfully",statusCode: 201, data:{ _id: user._id ,phoneNumber: user.phoneNumber,email: user.email,role: user.role, userPercentage: user.userPercentage, token },meta: null});
+    return res.status(201).json({success: true,message: "User registered successfully",statusCode: 201, data:{ _id: user._id ,phoneNumber: user.phoneNumber,email: user.email,role: user.role, userPercentage: user.userPercentage, token:token },meta: null});
   } catch (error) {
     next(error);
   }
