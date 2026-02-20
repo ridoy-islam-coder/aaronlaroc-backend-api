@@ -89,6 +89,7 @@ export const existingUser = async (body: any) => {
     password: hashedPassword,
     userPercentage: userPercentage
   });
+  
 
   await newUser.save();
   return newUser;

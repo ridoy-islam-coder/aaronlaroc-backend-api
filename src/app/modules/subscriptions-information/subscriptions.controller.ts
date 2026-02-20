@@ -16,6 +16,7 @@ const subscriptions = catchAsync(async (req, res) => {
      });
 });
 
+
 const subscriptionDetails = catchAsync(async (req, res) => {
      const { id }: any = req.user;
      const result = await SubscriptionService.subscriptionDetailsFromDB(id);

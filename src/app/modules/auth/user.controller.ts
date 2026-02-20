@@ -5,6 +5,8 @@ import { User } from "./user.model";
 import { logSuccess } from "../../../helpers/successLogger";
 import logger from "../../../helpers/logger";
 import { getErrorCount, incrementErrorCount } from "../../../helpers/errorCounter";
+ import jwt from "jsonwebtoken";
+ import { config } from './../../config/index';
 
 
 
@@ -23,6 +25,14 @@ export const registerUser = async (
 ) => {
   try {
     const user = await existingUser(req.body);
+  
+    // Create JWT token
+    const token = jwt.sign(
+      { _id: user._id, email: user.email, role: user.role },
+      config.jwt_secret as string,
+      { expiresIn: "1d" } // Token valid 7 days
+    );
+
 
     // return res.status(201).json({
     //   success: true,
@@ -34,7 +44,7 @@ export const registerUser = async (
     //     userPercentage: user.userPercentage
     //   }
     // });
-    return res.status(201).json({success: true,message: "User registered successfully",statusCode: 201, data:{ _id: user._id ,phoneNumber: user.phoneNumber,email: user.email,role: user.role, userPercentage: user.userPercentage},meta: null});
+    return res.status(201).json({success: true,message: "User registered successfully",statusCode: 201, data:{ _id: user._id ,phoneNumber: user.phoneNumber,email: user.email,role: user.role, userPercentage: user.userPercentage, token },meta: null});
   } catch (error) {
     next(error);
   }
