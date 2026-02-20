@@ -39,16 +39,7 @@ export const registerUser = async (
             config.jwt_secret as string, { expiresIn: "1d" }
         );
 
-    // return res.status(201).json({
-    //   success: true,
-    //   message: "User registered successfully",
-    //   data: {
-    //     _id: user._id,
-    //     email: user.email,
-    //     phoneNumber: user.phoneNumber,
-    //     userPercentage: user.userPercentage
-    //   }
-    // });
+      logSuccess(req, "User registered successfully", { userId: user._id, email: user.email });
     return res.status(201).json({success: true,message: "User registered successfully",statusCode: 201, data:{ _id: user._id ,phoneNumber: user.phoneNumber,email: user.email,role: user.role, userPercentage: user.userPercentage, token:token },meta: null});
   } catch (error) {
     next(error);
