@@ -40,21 +40,48 @@ const cancelSubscription = catchAsync(async (req, res) => {
      });
 });
 // create checkout session
-const createCheckoutSession = catchAsync(async (req, res) => {
-     const { id }: any = req.user;
-     const packageId = req.params.id;
-     const result = await SubscriptionService.createSubscriptionCheckoutSession(id, packageId);
+// const createCheckoutSession = catchAsync(async (req, res) => {
+//      const { id }: any = req.user;
+//      const packageId = req.params.id;
+//      const result = await SubscriptionService.createSubscriptionCheckoutSession(id, packageId);
 
-     sendResponse(res, {
-          statusCode: StatusCodes.OK,
-          success: true,
-          message: 'Create checkout session successfully',
-          data: {
-               sessionId: result.sessionId,
-               url: result.url,
-          },
-     });
+//      sendResponse(res, {
+//           statusCode: StatusCodes.OK,
+//           success: true,
+//           message: 'Create checkout session successfully',
+//           data: {
+//                sessionId: result.sessionId,
+//                url: result.url,
+//           },
+//      });
+// });
+
+
+const createCheckoutSession = catchAsync(async (req, res) => {
+    const { id }: any = req.user;
+    // ✅ convert string | string[] to string
+    const packageId = Array.isArray(req.params.id) ? req.params.id[0] : req.params.id;
+
+    const result = await SubscriptionService.createSubscriptionCheckoutSession(
+        String(id),
+        packageId
+    );
+
+    sendResponse(res, {
+        statusCode: StatusCodes.OK,
+        success: true,
+        message: 'Create checkout session successfully',
+        data: {
+            sessionId: result.sessionId,
+            url: result.url,
+        },
+    });
 });
+
+
+
+
+
 // update subscriptions
 const updateSubscription = catchAsync(async (req, res) => {
      const { id }: any = req.user;

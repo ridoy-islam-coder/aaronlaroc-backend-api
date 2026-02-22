@@ -16,16 +16,33 @@ const createPackage = catchAsync(async (req, res) => {
      });
 });
 
-const updatePackage = catchAsync(async (req, res) => {
-     const result = await PackageService.updatePackageToDB(req.params.id, req.body);
+// const updatePackage = catchAsync(async (req, res) => {
+//      const result = await PackageService.updatePackageToDB(req.params.id, req.body);
 
-     sendResponse(res, {
-          statusCode: StatusCodes.OK,
-          success: true,
-          message: 'Package updated Successfully',
-          data: result,
-     });
+//      sendResponse(res, {
+//           statusCode: StatusCodes.OK,
+//           success: true,
+//           message: 'Package updated Successfully',
+//           data: result,
+//      });
+// });
+
+
+
+export const updatePackage = catchAsync(async (req, res) => {
+  // ✅ Convert req.params.id safely to string
+  const packageId = Array.isArray(req.params.id) ? req.params.id[0] : req.params.id;
+
+  const result = await PackageService.updatePackageToDB(packageId, req.body);
+
+  sendResponse(res, {
+    statusCode: StatusCodes.OK,
+    success: true,
+    message: "Package updated Successfully",
+    data: result,
+  });
 });
+
 
 const getPackage = catchAsync(async (req, res) => {
      const result = await PackageService.getPackageFromDB(req.query);

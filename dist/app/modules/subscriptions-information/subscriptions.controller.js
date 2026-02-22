@@ -40,10 +40,25 @@ const cancelSubscription = (0, catchAsync_1.default)(async (req, res) => {
     });
 });
 // create checkout session
+// const createCheckoutSession = catchAsync(async (req, res) => {
+//      const { id }: any = req.user;
+//      const packageId = req.params.id;
+//      const result = await SubscriptionService.createSubscriptionCheckoutSession(id, packageId);
+//      sendResponse(res, {
+//           statusCode: StatusCodes.OK,
+//           success: true,
+//           message: 'Create checkout session successfully',
+//           data: {
+//                sessionId: result.sessionId,
+//                url: result.url,
+//           },
+//      });
+// });
 const createCheckoutSession = (0, catchAsync_1.default)(async (req, res) => {
     const { id } = req.user;
-    const packageId = req.params.id;
-    const result = await subscriptions_service_1.SubscriptionService.createSubscriptionCheckoutSession(id, packageId);
+    // ✅ convert string | string[] to string
+    const packageId = Array.isArray(req.params.id) ? req.params.id[0] : req.params.id;
+    const result = await subscriptions_service_1.SubscriptionService.createSubscriptionCheckoutSession(String(id), packageId);
     (0, sendResponse_1.default)(res, {
         statusCode: http_status_codes_1.StatusCodes.OK,
         success: true,

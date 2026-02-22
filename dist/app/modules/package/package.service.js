@@ -33,23 +33,49 @@ const createPackageToDB = async (payload) => {
     }
     return result;
 };
-const updatePackageToDB = async (id, payload) => {
+// const updatePackageToDB = async (id: string, payload: IPackage): Promise<IPackage | null> => {
+//      const isExistPackage: any = await Package.findById(id);
+//      if (!isExistPackage) {
+//           throw new AppError(StatusCodes.NOT_FOUND, 'Package not found');
+//      }
+//      const updatedProduct = await updateSubscriptionInfo(isExistPackage.productId, payload);
+//      if (!updatedProduct) {
+//           throw new AppError(StatusCodes.BAD_REQUEST, 'Failed to update subscription product in Stripe');
+//      }
+//      payload.priceId = updatedProduct.priceId;
+//      payload.productId = updatedProduct.productId;
+//      const updatedPackage = await Package.findByIdAndUpdate(id, payload, {
+//           new: true,
+//           runValidators: true,
+//      });
+//      if (!updatedPackage) {
+//           throw new AppError(StatusCodes.BAD_REQUEST, 'Failed to update package');
+//      }
+//      return updatedPackage;
+// };
+const updatePackageToDB = async (idParam, payload) => {
+    // ✅ Ensure id is string
+    const id = Array.isArray(idParam) ? idParam[0] : idParam;
+    // Find existing package
     const isExistPackage = await package_model_1.Package.findById(id);
     if (!isExistPackage) {
-        throw new AppError_1.default(http_status_codes_1.StatusCodes.NOT_FOUND, 'Package not found');
+        throw new AppError_1.default(http_status_codes_1.StatusCodes.NOT_FOUND, "Package not found");
     }
-    const updatedProduct = await (0, updateSubscriptionProductInfo_1.updateSubscriptionInfo)(isExistPackage.productId, payload);
+    // Update subscription info in Stripe
+    const updatedProduct = await (0, updateSubscriptionProductInfo_1.updateSubscriptionInfo)(isExistPackage.productId ?? "", payload);
     if (!updatedProduct) {
-        throw new AppError_1.default(http_status_codes_1.StatusCodes.BAD_REQUEST, 'Failed to update subscription product in Stripe');
+        throw new AppError_1.default(http_status_codes_1.StatusCodes.BAD_REQUEST, "Failed to update subscription product in Stripe");
     }
-    payload.priceId = updatedProduct.priceId;
-    payload.productId = updatedProduct.productId;
+    // ✅ Handle string | undefined safely
+    payload.priceId = updatedProduct.priceId ?? "";
+    payload.productId = updatedProduct.productId ?? "";
+    // Update package in MongoDB
     const updatedPackage = await package_model_1.Package.findByIdAndUpdate(id, payload, {
         new: true,
         runValidators: true,
     });
     if (!updatedPackage) {
-        throw new AppError_1.default(http_status_codes_1.StatusCodes.BAD_REQUEST, 'Failed to update package');
+        throw new AppError_1.default(http_status_codes_1.StatusCodes.BAD_REQUEST, "Failed to update package");
     }
     return updatedPackage;
 };

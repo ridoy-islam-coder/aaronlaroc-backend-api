@@ -110,10 +110,17 @@ const ProxysetController = async (req, res) => {
     return res.json(result);
 };
 exports.ProxysetController = ProxysetController;
+// export const getAllProxysetController = async (req: Request, res: Response) => {
+//   const { id } = req.params; 
+//   const result = await getProxysetData(id);
+//   logSuccess(req, "User updated successfully", { userId: req.user?.id || req.params.id });
+//   return res.json(result);
+// };
 const getAllProxysetController = async (req, res) => {
-    const { id } = req.params;
-    const result = await (0, user_service_1.getProxysetData)(id);
-    (0, successLogger_1.logSuccess)(req, "User updated successfully", { userId: req.user?.id || req.params.id });
+    // ✅ Convert id safely
+    const idStr = Array.isArray(req.params.id) ? req.params.id[0] : req.params.id;
+    const result = await (0, user_service_1.getProxysetData)(idStr);
+    (0, successLogger_1.logSuccess)(req, "User updated successfully", { userId: req.user?.id ?? idStr });
     return res.json(result);
 };
 exports.getAllProxysetController = getAllProxysetController;

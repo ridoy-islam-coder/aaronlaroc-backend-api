@@ -42,32 +42,84 @@ const createPackageToDB = async (payload: IPackage): Promise<IPackage | null> =>
      return result;
 };
 
-const updatePackageToDB = async (id: string, payload: IPackage): Promise<IPackage | null> => {
-     const isExistPackage: any = await Package.findById(id);
-     if (!isExistPackage) {
-          throw new AppError(StatusCodes.NOT_FOUND, 'Package not found');
-     }
+// const updatePackageToDB = async (id: string, payload: IPackage): Promise<IPackage | null> => {
+//      const isExistPackage: any = await Package.findById(id);
+//      if (!isExistPackage) {
+//           throw new AppError(StatusCodes.NOT_FOUND, 'Package not found');
+//      }
 
-     const updatedProduct = await updateSubscriptionInfo(isExistPackage.productId, payload);
+//      const updatedProduct = await updateSubscriptionInfo(isExistPackage.productId, payload);
 
-     if (!updatedProduct) {
-          throw new AppError(StatusCodes.BAD_REQUEST, 'Failed to update subscription product in Stripe');
-     }
+//      if (!updatedProduct) {
+//           throw new AppError(StatusCodes.BAD_REQUEST, 'Failed to update subscription product in Stripe');
+//      }
 
-     payload.priceId = updatedProduct.priceId;
-     payload.productId = updatedProduct.productId;
+//      payload.priceId = updatedProduct.priceId;
+//      payload.productId = updatedProduct.productId;
 
-     const updatedPackage = await Package.findByIdAndUpdate(id, payload, {
-          new: true,
-          runValidators: true,
-     });
+//      const updatedPackage = await Package.findByIdAndUpdate(id, payload, {
+//           new: true,
+//           runValidators: true,
+//      });
 
-     if (!updatedPackage) {
-          throw new AppError(StatusCodes.BAD_REQUEST, 'Failed to update package');
-     }
+//      if (!updatedPackage) {
+//           throw new AppError(StatusCodes.BAD_REQUEST, 'Failed to update package');
+//      }
 
-     return updatedPackage;
+//      return updatedPackage;
+// };
+const updatePackageToDB = async (
+  idParam: string | string[],
+  payload: IPackage
+): Promise<IPackage> => {
+  // ✅ Ensure id is string
+  const id = Array.isArray(idParam) ? idParam[0] : idParam;
+
+  // Find existing package
+  const isExistPackage: IPackage | null = await Package.findById(id);
+  if (!isExistPackage) {
+    throw new AppError(StatusCodes.NOT_FOUND, "Package not found");
+  }
+
+  // Update subscription info in Stripe
+  const updatedProduct = await updateSubscriptionInfo(
+    isExistPackage.productId ?? "",
+    payload
+  );
+
+  if (!updatedProduct) {
+    throw new AppError(
+      StatusCodes.BAD_REQUEST,
+      "Failed to update subscription product in Stripe"
+    );
+  }
+
+  // ✅ Handle string | undefined safely
+  payload.priceId = updatedProduct.priceId ?? "";
+  payload.productId = updatedProduct.productId ?? "";
+
+  // Update package in MongoDB
+  const updatedPackage = await Package.findByIdAndUpdate(id, payload, {
+    new: true,
+    runValidators: true,
+  });
+
+  if (!updatedPackage) {
+    throw new AppError(StatusCodes.BAD_REQUEST, "Failed to update package");
+  }
+
+  return updatedPackage;
 };
+
+
+
+
+
+
+
+
+
+
 
 const getPackageFromDB = async (queryParms: Record<string, unknown>) => {
      const query: any = {

@@ -3,7 +3,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.PackageController = void 0;
+exports.PackageController = exports.updatePackage = void 0;
 const http_status_codes_1 = require("http-status-codes");
 const package_service_1 = require("./package.service");
 const catchAsync_1 = __importDefault(require("../../../shared/catchAsync"));
@@ -17,12 +17,23 @@ const createPackage = (0, catchAsync_1.default)(async (req, res) => {
         data: result,
     });
 });
-const updatePackage = (0, catchAsync_1.default)(async (req, res) => {
-    const result = await package_service_1.PackageService.updatePackageToDB(req.params.id, req.body);
+// const updatePackage = catchAsync(async (req, res) => {
+//      const result = await PackageService.updatePackageToDB(req.params.id, req.body);
+//      sendResponse(res, {
+//           statusCode: StatusCodes.OK,
+//           success: true,
+//           message: 'Package updated Successfully',
+//           data: result,
+//      });
+// });
+exports.updatePackage = (0, catchAsync_1.default)(async (req, res) => {
+    // ✅ Convert req.params.id safely to string
+    const packageId = Array.isArray(req.params.id) ? req.params.id[0] : req.params.id;
+    const result = await package_service_1.PackageService.updatePackageToDB(packageId, req.body);
     (0, sendResponse_1.default)(res, {
         statusCode: http_status_codes_1.StatusCodes.OK,
         success: true,
-        message: 'Package updated Successfully',
+        message: "Package updated Successfully",
         data: result,
     });
 });
@@ -66,7 +77,7 @@ const deletePackage = (0, catchAsync_1.default)(async (req, res) => {
 });
 exports.PackageController = {
     createPackage,
-    updatePackage,
+    updatePackage: exports.updatePackage,
     getPackage,
     packageDetails,
     deletePackage,
