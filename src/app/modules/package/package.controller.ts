@@ -65,28 +65,57 @@ const getPackageByUser = catchAsync(async (req, res) => {
      });
 });
 
-const packageDetails = catchAsync(async (req, res) => {
-     const result = await PackageService.getPackageDetailsFromDB(req.params.id);
+// const packageDetails = catchAsync(async (req, res) => {
+//      const result = await PackageService.getPackageDetailsFromDB(req.params.id);
 
-     sendResponse(res, {
-          statusCode: StatusCodes.OK,
-          success: true,
-          message: 'Package Details Retrieved Successfully',
-          data: result,
-     });
+//      sendResponse(res, {
+//           statusCode: StatusCodes.OK,
+//           success: true,
+//           message: 'Package Details Retrieved Successfully',
+//           data: result,
+//      });
+// });
+
+// const deletePackage = catchAsync(async (req, res) => {
+//      const result = await PackageService.deletePackageToDB(req.params.id);
+
+//      sendResponse(res, {
+//           statusCode: StatusCodes.OK,
+//           success: true,
+//           message: 'Package Deleted Successfully',
+//           data: result,
+//      });
+// });
+
+
+
+// Package Controller
+const packageDetails = catchAsync(async (req, res) => {
+    // ✅ convert string | string[] to string
+    const packageId: string = Array.isArray(req.params.id) ? req.params.id[0] : req.params.id;
+
+    const result = await PackageService.getPackageDetailsFromDB(packageId);
+
+    sendResponse(res, {
+        statusCode: StatusCodes.OK,
+        success: true,
+        message: 'Package Details Retrieved Successfully',
+        data: result,
+    });
 });
 
 const deletePackage = catchAsync(async (req, res) => {
-     const result = await PackageService.deletePackageToDB(req.params.id);
+    const packageId: string = Array.isArray(req.params.id) ? req.params.id[0] : req.params.id;
 
-     sendResponse(res, {
-          statusCode: StatusCodes.OK,
-          success: true,
-          message: 'Package Deleted Successfully',
-          data: result,
-     });
+    const result = await PackageService.deletePackageToDB(packageId);
+
+    sendResponse(res, {
+        statusCode: StatusCodes.OK,
+        success: true,
+        message: 'Package Deleted Successfully',
+        data: result,
+    });
 });
-
 export const PackageController = {
      createPackage,
      updatePackage,

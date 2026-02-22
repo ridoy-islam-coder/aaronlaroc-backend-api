@@ -218,12 +218,46 @@ export const getAllProxysetController = async (req: Request, res: Response) => {
 
 
 
+// export const alldatapercentage = async (req: Request, res: Response) => {
+//   try {
+//     const { userId } = req.params;
+
+
+//     const userProfile = await getUserFullProfileService(userId);
+    
+//     // 🔹 Success log
+//     logSuccess(req, "Fetched full user profile", { userId });
+
+//     if (!userProfile) {
+//       return res.status(404).json({
+//         success: false,
+//         message: "User not found",
+//       });
+//     }
+
+//     return res.status(200).json({
+//       success: true,
+//       data: userProfile,
+//     });
+//   } catch (error) {
+//     console.error("Error fetching user profile:", error);
+//     return res.status(500).json({
+//       success: false,
+//       message: "Internal Server Error",
+//     });
+//   }
+// };
+
+
 export const alldatapercentage = async (req: Request, res: Response) => {
   try {
-    const { userId } = req.params;
+    // ✅ Handle string | string[] safely
+    const userId: string = Array.isArray(req.params.userId)
+      ? req.params.userId[0]
+      : req.params.userId;
 
     const userProfile = await getUserFullProfileService(userId);
-    
+
     // 🔹 Success log
     logSuccess(req, "Fetched full user profile", { userId });
 
@@ -246,6 +280,18 @@ export const alldatapercentage = async (req: Request, res: Response) => {
     });
   }
 };
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
@@ -488,9 +534,34 @@ export class UserAnalysisController {
 //proxysetId  data 
 
 
+// export const getAllOwnUserDataController = async (req: Request, res: Response) => {
+//   try {
+//     const loggedInUserId = req.user?.id;
+
+//     const data = await getAllOwnUserDataService(loggedInUserId);
+
+//     res.status(200).json({
+//       success: true,
+//       data
+//     });
+//   } catch (error: any) {
+//     if (error.message === "USER_NOT_FOUND") {
+//       return res.status(404).json({ success: false, message: "User not found" });
+//     }
+//     res.status(500).json({ success: false, message: "Server error" });
+//   }
+// };
+
 export const getAllOwnUserDataController = async (req: Request, res: Response) => {
   try {
-    const loggedInUserId = req.user?.id;
+    // ✅ Handle string | string[] safely
+    const loggedInUserId: string = Array.isArray(req.user?.id)
+      ? req.user?.id[0] 
+      : req.user?.id || ""; 
+
+    if (!loggedInUserId) {
+      return res.status(400).json({ success: false, message: "Invalid user ID" });
+    }
 
     const data = await getAllOwnUserDataService(loggedInUserId);
 
@@ -505,8 +576,6 @@ export const getAllOwnUserDataController = async (req: Request, res: Response) =
     res.status(500).json({ success: false, message: "Server error" });
   }
 };
-
-
 
 
 

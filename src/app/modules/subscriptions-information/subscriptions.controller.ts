@@ -84,9 +84,18 @@ const createCheckoutSession = catchAsync(async (req, res) => {
 
 // update subscriptions
 const updateSubscription = catchAsync(async (req, res) => {
-     const { id }: any = req.user;
-     const packageId = req.params.id;
-     const result = await SubscriptionService.upgradeSubscriptionToDB(id, packageId);
+        // ✅ logged in user id কে string বানানো
+    const userId: string = Array.isArray(req.user?.id) ? req.user.id[0] : req.user?.id || "";
+    if (!userId) throw new Error("Invalid user ID");
+
+    // ✅ package id কে string বানানো
+    const packageId: string = Array.isArray(req.params.id) ? req.params.id[0] : req.params.id;
+    if (!packageId) throw new Error("Invalid package ID");
+      const result = await SubscriptionService.upgradeSubscriptionToDB(userId, packageId);
+     
+     // const { id }: any = req.user;
+     // const packageId = req.params.id;
+     // const result = await SubscriptionService.upgradeSubscriptionToDB(id, packageId);
 
      sendResponse(res, {
           statusCode: StatusCodes.OK,
