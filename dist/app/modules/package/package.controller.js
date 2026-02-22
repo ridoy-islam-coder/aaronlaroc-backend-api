@@ -57,8 +57,29 @@ const getPackageByUser = (0, catchAsync_1.default)(async (req, res) => {
         meta: result.meta,
     });
 });
+// const packageDetails = catchAsync(async (req, res) => {
+//      const result = await PackageService.getPackageDetailsFromDB(req.params.id);
+//      sendResponse(res, {
+//           statusCode: StatusCodes.OK,
+//           success: true,
+//           message: 'Package Details Retrieved Successfully',
+//           data: result,
+//      });
+// });
+// const deletePackage = catchAsync(async (req, res) => {
+//      const result = await PackageService.deletePackageToDB(req.params.id);
+//      sendResponse(res, {
+//           statusCode: StatusCodes.OK,
+//           success: true,
+//           message: 'Package Deleted Successfully',
+//           data: result,
+//      });
+// });
+// Package Controller
 const packageDetails = (0, catchAsync_1.default)(async (req, res) => {
-    const result = await package_service_1.PackageService.getPackageDetailsFromDB(req.params.id);
+    // ✅ convert string | string[] to string
+    const packageId = Array.isArray(req.params.id) ? req.params.id[0] : req.params.id;
+    const result = await package_service_1.PackageService.getPackageDetailsFromDB(packageId);
     (0, sendResponse_1.default)(res, {
         statusCode: http_status_codes_1.StatusCodes.OK,
         success: true,
@@ -67,7 +88,8 @@ const packageDetails = (0, catchAsync_1.default)(async (req, res) => {
     });
 });
 const deletePackage = (0, catchAsync_1.default)(async (req, res) => {
-    const result = await package_service_1.PackageService.deletePackageToDB(req.params.id);
+    const packageId = Array.isArray(req.params.id) ? req.params.id[0] : req.params.id;
+    const result = await package_service_1.PackageService.deletePackageToDB(packageId);
     (0, sendResponse_1.default)(res, {
         statusCode: http_status_codes_1.StatusCodes.OK,
         success: true,

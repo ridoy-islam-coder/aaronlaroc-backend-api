@@ -71,9 +71,18 @@ const createCheckoutSession = (0, catchAsync_1.default)(async (req, res) => {
 });
 // update subscriptions
 const updateSubscription = (0, catchAsync_1.default)(async (req, res) => {
-    const { id } = req.user;
-    const packageId = req.params.id;
-    const result = await subscriptions_service_1.SubscriptionService.upgradeSubscriptionToDB(id, packageId);
+    // ✅ logged in user id কে string বানানো
+    const userId = Array.isArray(req.user?.id) ? req.user.id[0] : req.user?.id || "";
+    if (!userId)
+        throw new Error("Invalid user ID");
+    // ✅ package id কে string বানানো
+    const packageId = Array.isArray(req.params.id) ? req.params.id[0] : req.params.id;
+    if (!packageId)
+        throw new Error("Invalid package ID");
+    const result = await subscriptions_service_1.SubscriptionService.upgradeSubscriptionToDB(userId, packageId);
+    // const { id }: any = req.user;
+    // const packageId = req.params.id;
+    // const result = await SubscriptionService.upgradeSubscriptionToDB(id, packageId);
     (0, sendResponse_1.default)(res, {
         statusCode: http_status_codes_1.StatusCodes.OK,
         success: true,
