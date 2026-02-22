@@ -9,20 +9,21 @@ const user_model_1 = require("./user.model");
 const successLogger_1 = require("../../../helpers/successLogger");
 const logger_1 = __importDefault(require("../../../helpers/logger"));
 const errorCounter_1 = require("../../../helpers/errorCounter");
+const jsonwebtoken_1 = __importDefault(require("jsonwebtoken"));
+const index_1 = require("./../../config/index");
+const bcryptjs_1 = __importDefault(require("bcryptjs"));
 const registerUser = async (req, res, next) => {
     try {
         const user = await (0, user_service_1.existingUser)(req.body);
-        // return res.status(201).json({
-        //   success: true,
-        //   message: "User registered successfully",
-        //   data: {
-        //     _id: user._id,
-        //     email: user.email,
-        //     phoneNumber: user.phoneNumber,
-        //     userPercentage: user.userPercentage
-        //   }
-        // });
-        return res.status(201).json({ success: true, message: "User registered successfully", statusCode: 201, data: { _id: user._id, phoneNumber: user.phoneNumber, email: user.email, role: user.role, userPercentage: user.userPercentage }, meta: null });
+        // password get করা
+        const { password } = req.body;
+        const isMatch = await bcryptjs_1.default.compare(password, user.password);
+        if (!isMatch) {
+            throw new Error("Invalid password");
+        }
+        const token = jsonwebtoken_1.default.sign({ userId: user._id, role: user.role }, index_1.config.jwt_secret, { expiresIn: "1d" });
+        (0, successLogger_1.logSuccess)(req, "User registered successfully", { userId: user._id, email: user.email });
+        return res.status(201).json({ success: true, message: "User registered successfully", statusCode: 201, data: { _id: user._id, phoneNumber: user.phoneNumber, email: user.email, role: user.role, userPercentage: user.userPercentage, token: token }, meta: null });
     }
     catch (error) {
         next(error);
