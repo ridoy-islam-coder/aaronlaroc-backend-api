@@ -597,37 +597,92 @@ export const getAllOwnUserDataController = async (req: Request, res: Response) =
 
 
 
-
-
-
-
-
-
-export const getAllUserDataController = async (req: Request, res: Response) => {
+export const getAllUserDataController = async (
+  req: Request,
+  res: Response
+) => {
   try {
-    const requestedUserId = req.params.userId;
-    const loggedInUserId = req.user?.id; 
+    const { userId } = req.params;
+    const loggedInUserId = req.user?.id;
 
-    const data = await getAllUserDataService(requestedUserId, loggedInUserId);
+    // 🔒 userId validation
+    if (!userId || Array.isArray(userId)) {
+      return res.status(400).json({
+        success: false,
+        message: "Invalid user id"
+      });
+    }
 
-    res.status(200).json({
+    // 🔒 logged in user check
+    if (!loggedInUserId) {
+      return res.status(401).json({
+        success: false,
+        message: "Unauthorized"
+      });
+    }
+
+    const data = await getAllUserDataService(
+      userId,
+      loggedInUserId
+    );
+
+    return res.status(200).json({
       success: true,
       data
     });
+
   } catch (error: any) {
 
     if (error.message === "ACCESS_DENIED") {
-      return res.status(403).json({ success: false, message: "Access denied" });
+      return res.status(403).json({
+        success: false,
+        message: "Access denied"
+      });
     }
-
 
     if (error.message === "USER_NOT_FOUND") {
-      return res.status(404).json({ success: false, message: "User not found" });
+      return res.status(404).json({
+        success: false,
+        message: "User not found"
+      });
     }
 
-    res.status(500).json({ success: false, message: "Server error" });
+    return res.status(500).json({
+      success: false,
+      message: "Server error"
+    });
   }
 };
+
+
+
+
+
+// export const getAllUserDataController = async (req: Request, res: Response) => {
+//   try {
+//     const requestedUserId = req.params.userId;
+//     const loggedInUserId = req.user?.id; 
+
+//     const data = await getAllUserDataService(requestedUserId, loggedInUserId);
+
+//     res.status(200).json({
+//       success: true,
+//       data
+//     });
+//   } catch (error: any) {
+
+//     if (error.message === "ACCESS_DENIED") {
+//       return res.status(403).json({ success: false, message: "Access denied" });
+//     }
+
+
+//     if (error.message === "USER_NOT_FOUND") {
+//       return res.status(404).json({ success: false, message: "User not found" });
+//     }
+
+//     res.status(500).json({ success: false, message: "Server error" });
+//   }
+// };
 
 
 
