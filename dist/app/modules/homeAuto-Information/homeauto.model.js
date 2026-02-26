@@ -3,12 +3,10 @@
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.HomeAutoModel = void 0;
 const mongoose_1 = require("mongoose");
-const homeauto_interface_1 = require("./homeauto.interface");
 const homeautoSchema = new mongoose_1.Schema({
     // Vehicle
     vehicleOwnership: {
         type: String,
-        enum: homeauto_interface_1.VEHICLE_OWNERSHIP,
         default: undefined,
     },
     vehicleMakeModel: {
@@ -17,7 +15,7 @@ const homeautoSchema = new mongoose_1.Schema({
         default: undefined,
     },
     hasCarInsurance: {
-        type: Boolean,
+        type: String,
         default: undefined,
     },
     carInsuranceProvider: {
@@ -27,27 +25,24 @@ const homeautoSchema = new mongoose_1.Schema({
     },
     // ATV / Boat / Motorcycle
     hasPowerToys: {
-        type: Boolean,
+        type: String,
         default: undefined,
     },
     powerToyTypes: {
-        type: [String],
-        enum: homeauto_interface_1.POWER_TOYS,
+        type: String,
         default: undefined,
     },
     // Home
     homeOccupancy: {
         type: String,
-        enum: homeauto_interface_1.HOME_OCCUPANCY,
         default: undefined,
     },
     hasHomeInsurance: {
-        type: Boolean,
+        type: String,
         default: undefined,
     },
     homeInsuranceType: {
         type: String,
-        enum: homeauto_interface_1.HOME_INSURANCE_TYPE,
         default: undefined,
     },
     homeautoPercentage: { type: Number },
