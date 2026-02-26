@@ -3,11 +3,11 @@ import { IUser } from "../auth/user.interface";
 
 
 
-export const VEHICLE_OWNERSHIP = ["Own", "Lease", "No Vehicle"] as const;
-export type TVehicleOwnership = (typeof VEHICLE_OWNERSHIP)[number];
+// export const VEHICLE_OWNERSHIP = ["Own", "Lease", "No Vehicle"] as const;
+// export type TVehicleOwnership = (typeof VEHICLE_OWNERSHIP)[number];
 
-export const HOME_OCCUPANCY = ["Own", "Rent", "Other"] as const;
-export type THomeOccupancy = (typeof HOME_OCCUPANCY)[number];
+// export const HOME_OCCUPANCY = ["Own", "Rent", "Other"] as const;
+// export type THomeOccupancy = (typeof HOME_OCCUPANCY)[number];
 
 export const POWER_TOYS = ["ATV", "Boat", "Motorcycle"] as const;
 export type TPowerToy = (typeof POWER_TOYS)[number];
@@ -23,20 +23,20 @@ export interface IHomeVehicle extends Document {
   userID:IUser | Types.ObjectId;
 
   // Vehicle
-  vehicleOwnership?: TVehicleOwnership;   
+  vehicleOwnership?: string;   
   vehicleMakeModel?: string;              
-  hasCarInsurance?: boolean; 
+  hasCarInsurance?: string; 
   homeautoPercentage: number;           
   carInsuranceProvider?: string;          
 
  
-  hasPowerToys?: boolean;               
+  hasPowerToys?: string;               
   powerToyTypes?: TPowerToy[];            
 
   // Home
-  homeOccupancy?: THomeOccupancy;         
-  hasHomeInsurance?: boolean;             
-  homeInsuranceType?: THomeInsuranceType; 
+  homeOccupancy?: string;         
+  hasHomeInsurance?: string;             
+  homeInsuranceType?: string; 
 
   createdAt?: Date;
   updatedAt?: Date;

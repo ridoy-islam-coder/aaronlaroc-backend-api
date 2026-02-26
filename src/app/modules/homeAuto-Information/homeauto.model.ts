@@ -5,7 +5,8 @@
 
 import { model, Schema, Types } from 'mongoose'
 
-import { HOME_INSURANCE_TYPE, HOME_OCCUPANCY, IHomeVehicle, POWER_TOYS, VEHICLE_OWNERSHIP } from './homeauto.interface';
+import { string } from 'zod';
+import { IHomeVehicle } from './homeauto.interface';
 
 
 
@@ -14,7 +15,6 @@ const homeautoSchema =  new Schema<IHomeVehicle>({
      // Vehicle
     vehicleOwnership: {
       type: String,
-      enum: VEHICLE_OWNERSHIP,
       default: undefined,
     },
     vehicleMakeModel: {
@@ -23,7 +23,7 @@ const homeautoSchema =  new Schema<IHomeVehicle>({
       default: undefined,
     },
     hasCarInsurance: {
-      type: Boolean,
+      type: String,
       default: undefined,
     },
     carInsuranceProvider: {
@@ -34,30 +34,28 @@ const homeautoSchema =  new Schema<IHomeVehicle>({
 
     // ATV / Boat / Motorcycle
     hasPowerToys: {
-      type: Boolean,
+      type: String,
       default: undefined,
     },
     powerToyTypes: {
-      type: [String],
-      enum: POWER_TOYS,
+      type: String,
       default: undefined,
     },
 
     // Home
     homeOccupancy: {
       type: String,
-      enum: HOME_OCCUPANCY,
       default: undefined,
     },
     hasHomeInsurance: {
-      type: Boolean,
+      type: String,
       default: undefined,
     },
     homeInsuranceType: {
       type: String,
-      enum: HOME_INSURANCE_TYPE,
       default: undefined,
     },
+  
     homeautoPercentage: { type: Number },
     userID: { type: Types.ObjectId,   ref: 'User', required: true},
 
