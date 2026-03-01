@@ -36,7 +36,7 @@ export const registerUser = async (
     
         const token = jwt.sign(
             { userId: user._id, role: user.role },
-            config.jwt_secret as string, { expiresIn: "1d" }
+            config.jwt_secret as string, { expiresIn: "1d"}
         );
 
       logSuccess(req, "User registered successfully", { userId: user._id, email: user.email });

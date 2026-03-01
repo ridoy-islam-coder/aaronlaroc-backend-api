@@ -27,10 +27,7 @@ const userSchema =  new Schema<IUser>({
     type: String,
    
   },
-  yearStarted: {
-    type: Number,
-   
-  },
+
   email: {
     type: String,
     required: true,

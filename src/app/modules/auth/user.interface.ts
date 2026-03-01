@@ -14,7 +14,6 @@ export interface IUser extends Document {
     city: string;
     state: string;
     company: string;
-    yearStarted: number;
     email: string;
     phoneNumber: string;
     otp: string;
