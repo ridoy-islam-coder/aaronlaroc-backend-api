@@ -549,11 +549,11 @@ const getAllOwnUserDataService = async (loggedInUserId) => {
     const socialInfoPercentage = socialInfo.reduce((sum, item) => sum + (item.socialInfoPercentage || 0), 0);
     // userPercentage runtime only
     const userPercentage = user.userPercentage || 0;
-    const totalPercentage = homeautoPercentage +
+    const averagePercentage = homeautoPercentage +
         medicalPercentage +
         financialPercentage +
         socialInfoPercentage + userPercentage;
-    const averagePercentage = totalPercentage / 5;
+    const totalPercentage = averagePercentage / 5;
     // 💡 Suggestion logic (3 suggestions for every case)
     let suggestions = [];
     if (averagePercentage === 100) {
