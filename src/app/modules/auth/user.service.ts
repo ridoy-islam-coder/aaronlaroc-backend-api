@@ -753,13 +753,13 @@ export const getAllOwnUserDataService = async (loggedInUserId: string) => {
 
 
 
-  const totalPercentage =
+  const averagePercentage =
     homeautoPercentage +
     medicalPercentage +
     financialPercentage +
     socialInfoPercentage + userPercentage;
 
-    const averagePercentage = totalPercentage / 5;
+    const totalPercentage = averagePercentage / 5;
 
  
 
