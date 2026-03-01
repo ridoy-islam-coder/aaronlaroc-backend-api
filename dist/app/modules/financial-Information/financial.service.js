@@ -11,7 +11,11 @@ const FinancialUpdateService = async (req) => {
         const allFields = [
             requestBody.bankAccount,
             requestBody.retirementAccount,
-            requestBody.currentAssets,
+            requestBody.assets,
+            requestBody.assetsValue,
+            requestBody.hasDebt,
+            requestBody.businessOwnership,
+            requestBody.otherFinancialInfo,
             requestBody.debt,
         ];
         const filledFields = allFields.filter((field) => typeof field === "string" && field.trim() !== "").length;

@@ -12,13 +12,16 @@ const HomeAutoService = async (req) => {
         const allFields = [
             requestBody.vehicleOwnership,
             requestBody.vehicleMakeModel,
-            requestBody.hasCarInsurance,
-            requestBody.carInsuranceProvider,
-            requestBody.hasPowerToys,
-            requestBody.powerToyTypes,
-            requestBody.homeOccupancy,
-            requestBody.hasHomeInsurance,
-            requestBody.homeInsuranceType
+            requestBody.carInsurance,
+            requestBody.addAnotherVehicle,
+            requestBody.hasAtvBoatMotorcycle,
+            requestBody.vehicleOwnershipDuplicate,
+            requestBody.vehicleMakeModelDuplicate,
+            requestBody.atvBoatMotorcycleDetails,
+            requestBody.homeOwnership,
+            requestBody.homeInsurance,
+            requestBody.homeOwnershipDuplicate,
+            requestBody.homeInsuranceDuplicate
         ];
         const filledFields = allFields.filter(field => {
             if (typeof field === 'string') {

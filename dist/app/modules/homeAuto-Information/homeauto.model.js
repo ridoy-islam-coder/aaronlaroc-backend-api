@@ -14,34 +14,42 @@ const homeautoSchema = new mongoose_1.Schema({
         trim: true,
         default: undefined,
     },
-    hasCarInsurance: {
+    carInsurance: {
         type: String,
         default: undefined,
     },
-    carInsuranceProvider: {
+    hasAtvBoatMotorcycle: {
         type: String,
         trim: true,
         default: undefined,
     },
     // ATV / Boat / Motorcycle
-    hasPowerToys: {
+    vehicleOwnershipDuplicate: {
         type: String,
         default: undefined,
     },
-    powerToyTypes: {
+    vehicleMakeModelDuplicate: {
         type: String,
         default: undefined,
     },
     // Home
-    homeOccupancy: {
+    atvBoatMotorcycleDetails: {
         type: String,
         default: undefined,
     },
-    hasHomeInsurance: {
+    homeOwnership: {
         type: String,
         default: undefined,
     },
-    homeInsuranceType: {
+    homeInsurance: {
+        type: String,
+        default: undefined,
+    },
+    homeOwnershipDuplicate: {
+        type: String,
+        default: undefined,
+    },
+    homeInsuranceDuplicate: {
         type: String,
         default: undefined,
     },

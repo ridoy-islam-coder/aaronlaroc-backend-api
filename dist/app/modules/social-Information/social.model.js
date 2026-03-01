@@ -24,6 +24,16 @@ const SocialInfoSchema = new mongoose_1.Schema({
         trim: true,
         default: undefined,
     },
+    streamingServiceDuplicate: {
+        type: String,
+        trim: true,
+        default: undefined,
+    },
+    websiteDuplicate: {
+        type: String,
+        trim: true,
+        default: undefined,
+    },
     socialInfoPercentage: { type: Number },
 }, { timestamps: true, versionKey: false });
 exports.SocialInfoModel = (0, mongoose_1.model)("socialInfo", SocialInfoSchema);

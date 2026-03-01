@@ -3,17 +3,7 @@ import { IUser } from "../auth/user.interface";
 
 
 
-// export const VEHICLE_OWNERSHIP = ["Own", "Lease", "No Vehicle"] as const;
-// export type TVehicleOwnership = (typeof VEHICLE_OWNERSHIP)[number];
 
-// export const HOME_OCCUPANCY = ["Own", "Rent", "Other"] as const;
-// export type THomeOccupancy = (typeof HOME_OCCUPANCY)[number];
-
-export const POWER_TOYS = ["ATV", "Boat", "Motorcycle"] as const;
-export type TPowerToy = (typeof POWER_TOYS)[number];
-
-export const HOME_INSURANCE_TYPE = ["Homeowner", "Renter"] as const;
-export type THomeInsuranceType = (typeof HOME_INSURANCE_TYPE)[number];
 
 
 
@@ -25,18 +15,23 @@ export interface IHomeVehicle extends Document {
   // Vehicle
   vehicleOwnership?: string;   
   vehicleMakeModel?: string;              
-  hasCarInsurance?: string; 
-  homeautoPercentage: number;           
-  carInsuranceProvider?: string;          
+  carInsurance?: string; 
+  addAnotherVehicle: string;  
+
+  hasAtvBoatMotorcycle?: string;          
 
  
-  hasPowerToys?: string;               
-  powerToyTypes?: TPowerToy[];            
+  vehicleOwnershipDuplicate?: string;               
+  vehicleMakeModelDuplicate?: string;            
 
   // Home
-  homeOccupancy?: string;         
-  hasHomeInsurance?: string;             
-  homeInsuranceType?: string; 
+  atvBoatMotorcycleDetails?: string;         
+  homeOwnership?: string;             
+  homeInsurance?: string; 
+  homeOwnershipDuplicate?: string;
+  homeInsuranceDuplicate?: string;
+
+  homeautoPercentage?: number;
 
   createdAt?: Date;
   updatedAt?: Date;

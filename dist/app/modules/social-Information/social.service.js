@@ -11,7 +11,9 @@ const SocialInformationService = async (req) => {
         const allFields = [
             requestBody.socialMedia,
             requestBody.website,
-            requestBody.streamingService
+            requestBody.streamingService,
+            requestBody.streamingServiceDuplicate,
+            requestBody.websiteDuplicate
         ];
         const filledFields = allFields.filter(field => field && field.trim() !== "").length;
         const totalFields = allFields.length;

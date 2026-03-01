@@ -14,11 +14,14 @@ export const SocialInformationService = async (req: Request) => {
     
   
     const token = req.headers.authorization?.split(" ")[1] || null;
+ 
 
     const allFields = [
       requestBody.socialMedia,
       requestBody.website,
-      requestBody.streamingService
+      requestBody.streamingService,
+      requestBody.streamingServiceDuplicate,
+      requestBody.websiteDuplicate
      
     ];
 

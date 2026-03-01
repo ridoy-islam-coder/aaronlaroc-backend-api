@@ -6,7 +6,11 @@ const mongoose_1 = require("mongoose");
 const financialSchema = new mongoose_1.Schema({
     bankAccount: { type: String, required: true },
     retirementAccount: { type: String, required: true },
-    currentAssets: { type: String, required: true },
+    assets: { type: String, required: true },
+    assetsValue: { type: String, required: true },
+    hasDebt: { type: String, required: true },
+    businessOwnership: { type: String, required: true },
+    otherFinancialInfo: { type: String, required: true },
     debt: { type: String, required: true },
     financialPercentage: { type: Number },
     userID: { type: mongoose_1.Types.ObjectId, ref: 'User', required: true },

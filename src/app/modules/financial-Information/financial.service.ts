@@ -25,7 +25,11 @@ export const FinancialUpdateService = async (req: Request) => {
     const allFields = [
       requestBody.bankAccount,
       requestBody.retirementAccount,
-      requestBody.currentAssets,
+      requestBody.assets,
+      requestBody.assetsValue,
+      requestBody.hasDebt,
+      requestBody.businessOwnership,
+      requestBody.otherFinancialInfo,
       requestBody.debt,
     ];
 
