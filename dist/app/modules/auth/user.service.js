@@ -77,7 +77,6 @@ const existingUser = async (body) => {
         "city",
         "state",
         "company",
-        "yearStarted",
         "phoneNumber",
         "imgUrl"
     ];
@@ -460,6 +459,78 @@ const getUserFullProfileService = async (userId) => {
 };
 exports.getUserFullProfileService = getUserFullProfileService;
 //proxysetId  data 
+// export const getAllOwnUserDataService = async (loggedInUserId: string) => {
+//   const user = await User.findById(loggedInUserId);
+//   if (!user) throw new Error("USER_NOT_FOUND");
+//   const [homeauto, medical, financial,socialInfo,] = await Promise.all([
+//     HomeAutoModel.find({ userID: loggedInUserId }),
+//     MedicalModel.find({ userID: loggedInUserId }),
+//     FinancialModel.find({ userID: loggedInUserId }),
+//     SocialInfoModel.find({ userID: loggedInUserId }),
+//     // User.find({ userID: loggedInUserId }),
+//   ]);
+//     // 🔢 Calculate percentages
+//   const homeautoPercentage = homeauto.reduce(
+//     (sum, item) => sum + (item.homeautoPercentage || 0),
+//     0
+//   );
+//   const medicalPercentage = medical.reduce(
+//     (sum, item) => sum + (item.medicalsPercentage || 0),
+//     0
+//   );
+//   const financialPercentage = financial.reduce(
+//     (sum, item) => sum + (item.financialPercentage || 0),
+//     0
+//   );
+//   const socialInfoPercentage = socialInfo.reduce(
+//     (sum, item) => sum + (item.socialInfoPercentage || 0),
+//     0
+//   );
+//   // userPercentage runtime only
+//   const userPercentage = user.userPercentage || 0;
+//   const totalPercentage =
+//     homeautoPercentage +
+//     medicalPercentage +
+//     financialPercentage +
+//     socialInfoPercentage + userPercentage;
+//     const averagePercentage = totalPercentage / 5;
+//  // 💡 Suggestion logic (3 suggestions for every case)
+// let suggestions: string[] = [];
+// if (totalPercentage === 100) {
+//   suggestions = [
+//     "Profile is fully completed",
+//     "You can now access all features without any limitation",
+//     "Keep your profile updated for better experience"
+//   ];
+// } else if (totalPercentage >= 86) {
+//   suggestions = [
+//     "Your profile is almost completed",
+//     "Complete remaining sections to reach 100%",
+//     "Review and submit missing information"
+//   ];
+// } else if (totalPercentage >= 41) {
+//   suggestions = [
+//     "Your profile is partially completed",
+//     "Add more information to improve profile strength",
+//     "Completing all sections helps better service"
+//   ];
+// } else {
+//   suggestions = [
+//     "Your profile is very incomplete",
+//     "Please start adding your personal information",
+//     "Completing your profile unlocks more features"
+//   ];
+// }
+//   return { user,homeauto, medical, financial,socialInfo , percentages: {
+//       homeautoPercentage,
+//       medicalPercentage,
+//       financialPercentage,
+//       socialInfoPercentage,
+//       userPercentage,
+//       totalPercentage,
+//       averagePercentage,
+//     }, suggestions };
+// };
 const getAllOwnUserDataService = async (loggedInUserId) => {
     const user = await user_model_1.User.findById(loggedInUserId);
     if (!user)
@@ -482,23 +553,38 @@ const getAllOwnUserDataService = async (loggedInUserId) => {
         medicalPercentage +
         financialPercentage +
         socialInfoPercentage + userPercentage;
+    const averagePercentage = totalPercentage / 5;
     // 💡 Suggestion logic (3 suggestions for every case)
     let suggestions = [];
-    if (totalPercentage === 100) {
+    if (averagePercentage === 100) {
         suggestions = [
             "Profile is fully completed",
             "You can now access all features without any limitation",
             "Keep your profile updated for better experience"
         ];
     }
-    else if (totalPercentage >= 71) {
+    else if (averagePercentage === 90) {
+        suggestions = [
+            "Profile is fully completed",
+            "You can now access all features without any limitation",
+            "Keep your profile updated for better experience"
+        ];
+    }
+    else if (averagePercentage >= 86) {
         suggestions = [
             "Your profile is almost completed",
             "Complete remaining sections to reach 100%",
             "Review and submit missing information"
         ];
     }
-    else if (totalPercentage >= 41) {
+    else if (averagePercentage >= 60) {
+        suggestions = [
+            "Your profile is almost completed",
+            "Complete remaining sections to reach 100%",
+            "Review and submit missing information"
+        ];
+    }
+    else if (averagePercentage >= 41) {
         suggestions = [
             "Your profile is partially completed",
             "Add more information to improve profile strength",
@@ -518,7 +604,8 @@ const getAllOwnUserDataService = async (loggedInUserId) => {
             financialPercentage,
             socialInfoPercentage,
             userPercentage,
-            totalPercentage
+            totalPercentage,
+            averagePercentage,
         }, suggestions };
 };
 exports.getAllOwnUserDataService = getAllOwnUserDataService;

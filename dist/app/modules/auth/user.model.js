@@ -22,9 +22,6 @@ const userSchema = new mongoose_1.Schema({
     company: {
         type: String,
     },
-    yearStarted: {
-        type: Number,
-    },
     email: {
         type: String,
         required: true,
