@@ -6,21 +6,26 @@ const user_interface_1 = require("./user.interface");
 const userSchema = new mongoose_1.Schema({
     firstName: {
         type: String,
+        default: '',
     },
     lastName: {
         type: String,
+        default: '',
     },
     dateOfBirth: {
         type: Date,
+        default: null,
     },
     city: {
         type: String,
+        default: '',
     },
     state: {
         type: String,
     },
     company: {
         type: String,
+        default: '',
     },
     email: {
         type: String,
@@ -35,6 +40,7 @@ const userSchema = new mongoose_1.Schema({
     },
     phoneNumber: {
         type: String,
+        default: '',
         // match: /^\+[1-9]\d{1,14}$/,
     },
     otp: { type: String },
