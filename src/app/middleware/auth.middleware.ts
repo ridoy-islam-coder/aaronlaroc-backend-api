@@ -38,8 +38,8 @@ export const auth= async(req:AuthenticatedRequest, res:Response, next:NextFuncti
 
 
 export const isAdmin = (req:AuthenticatedRequest, res:Response, next:NextFunction) => {
-  if (req.user?.role !== "ADMIN") {
-   return res.status(403).json({ message: "Access denied. Admins only." });
+  if (req.user?.role !== "ADMIN" && req.user?.role !== "SUPER_ADMIN") {
+   return res.status(403).json({ message: "Access denied. Admins only."});
   }
     next();
 };
@@ -47,9 +47,16 @@ export const isAdmin = (req:AuthenticatedRequest, res:Response, next:NextFunctio
 
 
 
-export const isCorporate = (req: AuthenticatedRequest, res: Response, next: NextFunction) => {
-  if (req.user?.role !== "corporate") {
-    return res.status(403).json({ message: "Access denied. Corporate users only." });
-  }
-  next();
-};
+
+
+
+
+
+
+
+// export const isSUPER_ADMIN = (req: AuthenticatedRequest, res: Response, next: NextFunction) => {
+//   if (req.user?.role !== "SUPER_ADMIN" && req.user?.role !== "ADMIN") {
+//     return res.status(403).json({ message: "Access denied. SUPER_ADMIN users only." });
+//   }
+//   next();
+// };

@@ -16,9 +16,10 @@ export interface IHomeVehicle extends Document {
   vehicleOwnership?: string;   
   vehicleMakeModel?: string;              
   carInsurance?: string; 
-  addAnotherVehicle: string;  
+  addAnotherVehicle?: string;  
 
-  hasAtvBoatMotorcycle?: string;          
+  hasAtvBoatMotorcycle?: string; 
+       
 
  
   vehicleOwnershipDuplicate?: string;               

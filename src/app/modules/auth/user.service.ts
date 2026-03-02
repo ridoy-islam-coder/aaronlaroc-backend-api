@@ -1064,6 +1064,8 @@ export const updateUserService = async (req:Request) => {
 
 
 
+
+
 export const adminUpdateUserService = async (req: Request) => {
   try {
     const adminId = req.user?.id;
@@ -1076,10 +1078,10 @@ export const adminUpdateUserService = async (req: Request) => {
     }
 
     // 🔐 Admin check
-    if (adminRole !== Role.ADMIN) {
+    if (adminRole !== Role.SUPER_ADMIN) {
       return {
         status: "failed",
-        message: "Only admin can update user",
+        message: "Only super admin can update user",
       };
     }
 

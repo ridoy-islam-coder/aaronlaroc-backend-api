@@ -26,6 +26,9 @@ const homeautoSchema =  new Schema<IHomeVehicle>({
       type: String,
       default: undefined,
     },
+    addAnotherVehicle: {
+    type: String,
+ },
     hasAtvBoatMotorcycle: {
       type: String,
       trim: true,
@@ -72,3 +75,7 @@ const homeautoSchema =  new Schema<IHomeVehicle>({
 })
 
 export const HomeAutoModel = model<IHomeVehicle>("homeauto", homeautoSchema);
+
+
+
+

@@ -8,7 +8,7 @@ import { FINANCIAL } from './financial.interface';
 
 
 const financialSchema =  new Schema<FINANCIAL>({
-    bankAccount: { type: String, required: true },
+    bankAccount: { type: String, required: true },                    
     retirementAccount: { type: String, required: true },
 
     assets: { type: String, required: true },
@@ -27,3 +27,6 @@ const financialSchema =  new Schema<FINANCIAL>({
 })
 
 export const FinancialModel = model<FINANCIAL>("financial", financialSchema);
+
+
+ 
