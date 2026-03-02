@@ -3,7 +3,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.isCorporate = exports.isAdmin = exports.auth = void 0;
+exports.isAdmin = exports.auth = void 0;
 const jsonwebtoken_1 = __importDefault(require("jsonwebtoken"));
 const config_1 = require("../config");
 const user_model_1 = require("../modules/auth/user.model");
@@ -31,16 +31,15 @@ const auth = async (req, res, next) => {
 };
 exports.auth = auth;
 const isAdmin = (req, res, next) => {
-    if (req.user?.role !== "ADMIN") {
+    if (req.user?.role !== "ADMIN" && req.user?.role !== "SUPER_ADMIN") {
         return res.status(403).json({ message: "Access denied. Admins only." });
     }
     next();
 };
 exports.isAdmin = isAdmin;
-const isCorporate = (req, res, next) => {
-    if (req.user?.role !== "corporate") {
-        return res.status(403).json({ message: "Access denied. Corporate users only." });
-    }
-    next();
-};
-exports.isCorporate = isCorporate;
+// export const isSUPER_ADMIN = (req: AuthenticatedRequest, res: Response, next: NextFunction) => {
+//   if (req.user?.role !== "SUPER_ADMIN" && req.user?.role !== "ADMIN") {
+//     return res.status(403).json({ message: "Access denied. SUPER_ADMIN users only." });
+//   }
+//   next();
+// };

@@ -18,6 +18,9 @@ const homeautoSchema = new mongoose_1.Schema({
         type: String,
         default: undefined,
     },
+    addAnotherVehicle: {
+        type: String,
+    },
     hasAtvBoatMotorcycle: {
         type: String,
         trim: true,

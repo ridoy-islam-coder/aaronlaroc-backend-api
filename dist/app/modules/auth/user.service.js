@@ -748,10 +748,10 @@ const adminUpdateUserService = async (req) => {
             return { status: "failed", message: "Unauthorized" };
         }
         // 🔐 Admin check
-        if (adminRole !== user_interface_1.Role.ADMIN) {
+        if (adminRole !== user_interface_1.Role.SUPER_ADMIN) {
             return {
                 status: "failed",
-                message: "Only admin can update user",
+                message: "Only super admin can update user",
             };
         }
         if (!userId) {

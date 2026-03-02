@@ -5,5 +5,5 @@ var Role;
 (function (Role) {
     Role["USER"] = "USER";
     Role["ADMIN"] = "ADMIN";
-    Role["CORPORATE"] = "CORPORATE";
+    Role["SUPER_ADMIN"] = "SUPER_ADMIN";
 })(Role || (exports.Role = Role = {}));
