@@ -127,10 +127,12 @@
 </a>
 
 <script>
-document.getElementById("retryPayment").onclick = e => {
-    e.preventDefault();
-    window.location.replace("https://myplaneer.com/plans");
-};
+document.addEventListener("DOMContentLoaded", function () {
+    document.getElementById("retryPayment").onclick = function(e){
+        e.preventDefault();
+        window.location.replace("https://myplaneer.com/plans");
+    };
+});
 </script>
  
   </div>
