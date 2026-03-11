@@ -1,5 +1,5 @@
 import { NextFunction, Request, Response } from "express";
-import { adminDeleteUserService, adminEmailService, adminLoginService, adminUpdateUserService, codeVerification,  existingUser,   getAllOwnUserDataService,   getAllUserDataService,  getallUsers, getCountsService, getNewUsersLast10DaysService, getprofileService, getProxysetData, getUserFullProfileService,getUsersWhoAddedMeAsProxyService,getUsersWhoSetMyProxyService,LoginInUser,  ProxysetService, searchUsersService,  updatePassword, updateUserService, UserAnalysisService, userSelfUpdateService } from "./user.service";
+import { adminDeleteUserService, adminEmailService, adminLoginService, adminUpdateUserService, codeVerification,  existingUser,   getAllOwnUserDataService,   getAllUserDataService,  getallUsers, getCountsService, getNewUsersLast10DaysService, getprofileService, getProxysetData, getProxyUsersService, getUserFullProfileService,getUsersWhoAddedMeAsProxyService,getUsersWhoSetMyProxyService,LoginInUser,  ProxysetService, searchUsersService,  updatePassword, updateProxyUserAtIndexService, updateUserService, UserAnalysisService, userSelfUpdateService } from "./user.service";
 import { ProxyUser } from "./user.interface";
 import { User } from "./user.model";
 import { logSuccess } from "../../../helpers/successLogger";
@@ -79,6 +79,44 @@ export const loginUser = async (req:Request, res:Response, next:NextFunction) =>
 
 
 
+
+
+export const updateProxyUserAtIndexController = async (req: Request, res: Response, next: NextFunction) => {
+  try {
+    const result = await updateProxyUserAtIndexService(req);
+
+    logSuccess(req, "Updated proxy user at index");
+
+    res.json(result);
+  } catch (error) {
+    next(error);
+  }
+};
+
+
+
+
+
+
+
+
+
+
+
+
+
+export const GetProxyUsers = async (req: Request, res: Response, next: NextFunction) => {
+  try {
+    const result = await getProxyUsersService(req);
+
+    // 🔹 Success log
+    logSuccess(req, "Fetched proxy users");
+
+    res.json(result);
+  } catch (error) {
+    next(error);
+  }
+};
 
 
 

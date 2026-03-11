@@ -1,5 +1,5 @@
 import express from "express";
-import { adminDeleteUser, AdminEmail, adminLoginController, adminUpdateUser, alldatapercentage, codeverify,      forgetPassword,  getAllOwnUserDataController,  GetAllProfile, getAllProxysetController, getAllUserDataController, getCounts, getNewUsersLast10Days, GetProfileData, getSystemPerformance, getUsersWhoAddedMeAsProxyController, getUsersWhoSetMyProxy, loginUser,  ProxysetController, registerUser, searchUsersController, updateUserController, UserAnalysisController, UserList, userSelfUpdate,  } from "./user.controller";
+import { adminDeleteUser, AdminEmail, adminLoginController, adminUpdateUser, alldatapercentage, codeverify,      forgetPassword,  getAllOwnUserDataController,  GetAllProfile, getAllProxysetController, getAllUserDataController, getCounts, getNewUsersLast10Days, GetProfileData, GetProxyUsers, getSystemPerformance, getUsersWhoAddedMeAsProxyController, getUsersWhoSetMyProxy, loginUser,  ProxysetController, registerUser, searchUsersController, updateProxyUserAtIndexController, updateUserController, UserAnalysisController, UserList, userSelfUpdate,  } from "./user.controller";
 import { auth, isAdmin, } from './../../middleware/auth.middleware';
 
 
@@ -121,9 +121,10 @@ router.get("/performance",auth,isAdmin, getSystemPerformance);
 
 
 
+//agen user list
 
-
-
+router.get("/my-proxyset-users", auth, GetProxyUsers);
+router.put("/proxyset/update-index", auth, updateProxyUserAtIndexController);
 
 
 

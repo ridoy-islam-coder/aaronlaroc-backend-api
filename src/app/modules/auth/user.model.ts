@@ -1,5 +1,6 @@
 import { model, Schema, Types } from "mongoose"
 import { IUser, Role } from "./user.interface"
+// import bcrypt from 'bcrypt';
 
 const userSchema =  new Schema<IUser>({
   firstName: {
@@ -56,6 +57,7 @@ const userSchema =  new Schema<IUser>({
     },
    
      proxysetId: [{ type: Types.ObjectId, ref: "User" }],
+
        stripeCustomerId: {
                type: String,
                default: '',
@@ -70,6 +72,31 @@ const userSchema =  new Schema<IUser>({
 }, {
     timestamps: true,versionKey:false
 })
+
+// // Pre-save middleware to hash password
+// userSchema.pre('save', async function (next) {
+//   const user = this;
+//   if (!user.isModified('password')) return next(); // Only hash if password changed
+//   try {
+//     const salt = await bcrypt.genSalt(10);
+//     user.password = await bcrypt.hash(user.password, salt);
+//     next();
+//   } catch (err) {
+//     next(err);
+//   }
+// });
+
+// // Optional: method to compare password during login
+// userSchema.methods.comparePassword = async function (candidatePassword: string) {
+//   return bcrypt.compare(candidatePassword, this.password);
+// };
+// // Remove password from returned JSON
+// userSchema.set('toJSON', {
+//   transform: (doc, ret) => {
+//     delete ret.password;
+//     return ret;
+//   }
+// });
 
 
 export const User = model<IUser>("User", userSchema)

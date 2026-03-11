@@ -143,6 +143,82 @@ export const getprofileService =async (req:Request) => {
 
 
 
+ // মূল ইউজারের proxysetId অনুযায়ী ইউজারদের ডেটা আনা
+export const getProxyUsersService = async (req: Request) => {
+  try {
+    const user_id = req.user?.id; // token middleware থেকে আসা
+
+   
+    const user = await User.findById(user_id)
+      .populate("proxysetId", "firstName lastName email imgUrl role")
+      .exec();
+
+    if (!user) {
+      return { status: "failed", message: "User not found" };
+    }
+
+    return {
+      status: "success",
+      message: "Proxy users fetched successfully",
+      data: user.proxysetId
+    };
+  } catch (error) {
+    return { status: "failed", data: error };
+  }
+};
+
+
+
+
+
+export const updateProxyUserAtIndexService = async (req: Request) => {
+  try {
+    const user_id = req.user?.id; // token middleware থেকে আসা
+    const { index, newUserId } = req.body; // body থেকে index এবং নতুন userId নাও
+
+    if (!Types.ObjectId.isValid(newUserId)) {
+      return { status: "failed", message: "Invalid newUserId" };
+    }
+
+    const user = await User.findById(user_id);
+
+    if (!user) {
+      return { status: "failed", message: "User not found" };
+    }
+
+    if (!user.proxysetId) user.proxysetId = [];
+
+    // আগের userId delete করা ওই index থেকে
+    if (user.proxysetId[index]) {
+      user.proxysetId.splice(index, 1);
+    }
+
+    // নতুন userId সেই index-এ set করা
+    user.proxysetId.splice(index, 0, newUserId);
+
+    await user.save();
+
+    return {
+      status: "success",
+      message: "Proxy user updated successfully",
+      data: user.proxysetId,
+    };
+  } catch (error) {
+    return { status: "failed", data: error };
+  }
+};
+
+
+
+
+
+
+
+
+
+
+
+
 
 export const adminDeleteUserService = async (req: Request) => {
   try {
