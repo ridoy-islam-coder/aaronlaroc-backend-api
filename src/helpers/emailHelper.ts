@@ -3,58 +3,68 @@ import nodemailer from "nodemailer";
 import mailgun from "nodemailer-mailgun-transport";
 import { config } from "../app/config";
 
-// export const SendEmail = async (EmailTo: string,  EmailText: string,  EmailSubject: string) => {
-//   const transporter = nodemailer.createTransport({
-//     host: "smtp.gmail.com",
-//     port: 587,
-//     secure: false,
+
+
+// if (!config.email.api_key || !config.email.domain) {
+//   throw new Error("Mailgun configuration is missing in .env");
+// }
+
+
+// export const SendEmail = async (
+//   EmailTo: string,
+//   EmailSubject: string,
+//   EmailText: string
+// ) => {
+//   const auth = {
 //     auth: {
-//       user: "rkrafikridoy5887@gmail.com",
-//       pass: "crba acbp ezyv rqlw",
+//       api_key: config.email.api_key  as string,
+//       domain: config.email.domain  as string,
 //     },
-//     tls: {
-//       rejectUnauthorized: false,
-//     },
-//   });
+//   };
+
+//   const transporter = nodemailer.createTransport(mailgun(auth));
+
 
 //   const mailOptions = {
-//         from:'Task manager MERN <rkrafikridoy5887@gmail.com>',
-//         to:EmailTo,
-//         subject:EmailText,
-//         text:EmailSubject
+//     from: `${config.email.header_name} <${config.email.from}>`,
+//     to: EmailTo,
+//     subject: EmailSubject,
+//     text: EmailText,
 //   };
 
-//   return transporter.sendMail(mailOptions);
-//   };
-
-
-
-if (!config.email.api_key || !config.email.domain) {
-  throw new Error("Mailgun configuration is missing in .env");
-}
+//   return await transporter.sendMail(mailOptions);
+// };
 
 
 export const SendEmail = async (
   EmailTo: string,
   EmailSubject: string,
-  EmailText: string
+  EmailText: string,
+ 
 ) => {
-  const auth = {
-    auth: {
-      api_key: config.email.api_key  as string,
-      domain: config.email.domain  as string,
-    },
-  };
+  try {
+    const auth = {
+      auth: {
+        api_key: config.email.api_key  as string,
+        domain: config.email.domain  as string,
+      },
+    };
 
-  const transporter = nodemailer.createTransport(mailgun(auth));
+    const transporter = nodemailer.createTransport(mailgun(auth));
 
+    const mailOptions = {
+      from: `${config.email.header_name} <${config.email.from}>`,
+      to: EmailTo,
+      subject: EmailSubject,
+      text: EmailText,
+   
+    };
 
-  const mailOptions = {
-    from: `${config.email.header_name} <${config.email.from}>`,
-    to: EmailTo,
-    subject: EmailSubject,
-    text: EmailText,
-  };
-
-  return await transporter.sendMail(mailOptions);
+    const info = await transporter.sendMail(mailOptions);
+    console.log("Email sent:", info.messageId);
+    return info;
+  } catch (error: any) {
+    console.error("SendEmail error:", error.message);
+    throw new Error("Failed to send email");
+  }
 };

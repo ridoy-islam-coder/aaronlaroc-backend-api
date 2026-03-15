@@ -8,6 +8,8 @@ import { getErrorCount, incrementErrorCount } from "../../../helpers/errorCounte
  import jwt from "jsonwebtoken";
  import { config } from './../../config/index';
  import bcrypt from "bcryptjs";
+import { SendEmail } from "../../../helpers/emailHelper";
+
 
 
 
@@ -39,8 +41,8 @@ export const registerUser = async (
             config.jwt_secret as string, { expiresIn: "1d"}
         );
 
-      logSuccess(req, "User registered successfully", { userId: user._id, email: user.email });
-    return res.status(201).json({success: true,message: "User registered successfully",statusCode: 201, data:{ _id: user._id ,phoneNumber: user.phoneNumber,email: user.email,role: user.role, userPercentage: user.userPercentage, token:token },meta: null});
+      logSuccess(req, "Account created successfully", { userId: user._id, email: user.email });
+    return res.status(201).json({success: true,message: "Account created successfully",statusCode: 201, data:{ _id: user._id ,phoneNumber: user.phoneNumber,email: user.email,role: user.role, userPercentage: user.userPercentage, token:token },meta: null});
   } catch (error) {
     next(error);
   }
@@ -66,7 +68,7 @@ export const loginUser = async (req:Request, res:Response, next:NextFunction) =>
     logSuccess(req, "User logged in successfully", { userId: user._id, email: user.email });
 
 
-      return res.status(200).json({ success: true, message: "User logged in successfully",statusCode: 200, data: {_id: user._id,phoneNumber: user.phoneNumber, email: user.email, role: user.role, token: token },
+      return res.status(200).json({ success: true, message: "Logged in Successfully",statusCode: 200, data: {_id: user._id,phoneNumber: user.phoneNumber, email: user.email, role: user.role, token: token },
        meta: null
       });
 
@@ -256,35 +258,6 @@ export const getAllProxysetController = async (req: Request, res: Response) => {
 
 
 
-// export const alldatapercentage = async (req: Request, res: Response) => {
-//   try {
-//     const { userId } = req.params;
-
-
-//     const userProfile = await getUserFullProfileService(userId);
-    
-//     // 🔹 Success log
-//     logSuccess(req, "Fetched full user profile", { userId });
-
-//     if (!userProfile) {
-//       return res.status(404).json({
-//         success: false,
-//         message: "User not found",
-//       });
-//     }
-
-//     return res.status(200).json({
-//       success: true,
-//       data: userProfile,
-//     });
-//   } catch (error) {
-//     console.error("Error fetching user profile:", error);
-//     return res.status(500).json({
-//       success: false,
-//       message: "Internal Server Error",
-//     });
-//   }
-// };
 
 
 export const alldatapercentage = async (req: Request, res: Response) => {
@@ -403,6 +376,101 @@ export const forgetPassword = async (req: Request, res: Response, next: NextFunc
     next(error);
   }
 };
+
+
+
+
+
+// -----------------------------
+// 1️⃣ Send Reset Password Email
+// -----------------------------
+export const newforgotPassword = async (req: Request, res: Response) => {
+  try {
+    const { email } = req.body;
+    if (!email) return res.status(400).json({ message: "Email is required" });
+
+    const user = await User.findOne({ email });
+    if (!user) return res.status(404).json({ message: "User not found" });
+
+    // Generate JWT token, expires in 15 minutes
+    const token = jwt.sign(
+      { email: user.email },
+      config.jwt_secret as string,
+      { expiresIn: "15m" }
+    );
+
+    // Reset password link
+    const resetLink = `${config.frontend_url}/reset-password?token=${token}`;
+
+    // Email content
+    const emailText = `
+      Hello ${user.firstName || ""},
+
+      You requested a password reset. Click the link below to reset your password:
+      ${resetLink}
+
+      This link will expire in 15 minutes.
+
+      If you didn't request this, ignore this email.
+    `;
+
+    await SendEmail(user.email, "Reset Your Password", emailText);
+
+    return res.json({ status: "success", message: "Reset password link sent to email" });
+  } catch (error: any) {
+    return res.status(500).json({ status: "failed", message: error.message });
+  }
+};
+
+// -----------------------------
+// 2️⃣ Reset Password API
+// -----------------------------
+export const newresetPassword = async (req: Request, res: Response) => {
+  try {
+    const { token, password } = req.body;
+    if (!token || !password) {
+      return res.status(400).json({ message: "Token and new password are required" });
+    }
+
+    // Verify JWT token
+    const decoded: any = jwt.verify(token, config.jwt_secret as string);
+    const email = decoded.email;
+
+    const user = await User.findOne({ email });
+    if (!user) return res.status(404).json({ message: "User not found" });
+
+    // Hash new password
+    const hashedPassword = await bcrypt.hash(password, 10);
+
+    // Update password
+    user.password = hashedPassword;
+    await user.save();
+
+    return res.json({ status: "success", message: "Password reset successfully" });
+  } catch (error: any) {
+    // Token expired or invalid
+    return res.status(400).json({ status: "failed", message: "Invalid or expired link" });
+  }
+};
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
@@ -569,26 +637,6 @@ export class UserAnalysisController {
 
 
 
-//proxysetId  data 
-
-
-// export const getAllOwnUserDataController = async (req: Request, res: Response) => {
-//   try {
-//     const loggedInUserId = req.user?.id;
-
-//     const data = await getAllOwnUserDataService(loggedInUserId);
-
-//     res.status(200).json({
-//       success: true,
-//       data
-//     });
-//   } catch (error: any) {
-//     if (error.message === "USER_NOT_FOUND") {
-//       return res.status(404).json({ success: false, message: "User not found" });
-//     }
-//     res.status(500).json({ success: false, message: "Server error" });
-//   }
-// };
 
 export const getAllOwnUserDataController = async (req: Request, res: Response) => {
   try {
@@ -696,31 +744,7 @@ export const getAllUserDataController = async (
 
 
 
-// export const getAllUserDataController = async (req: Request, res: Response) => {
-//   try {
-//     const requestedUserId = req.params.userId;
-//     const loggedInUserId = req.user?.id; 
 
-//     const data = await getAllUserDataService(requestedUserId, loggedInUserId);
-
-//     res.status(200).json({
-//       success: true,
-//       data
-//     });
-//   } catch (error: any) {
-
-//     if (error.message === "ACCESS_DENIED") {
-//       return res.status(403).json({ success: false, message: "Access denied" });
-//     }
-
-
-//     if (error.message === "USER_NOT_FOUND") {
-//       return res.status(404).json({ success: false, message: "User not found" });
-//     }
-
-//     res.status(500).json({ success: false, message: "Server error" });
-//   }
-// };
 
 
 
@@ -780,7 +804,7 @@ export const getUsersWhoSetMyProxy = async (
       data: result.data
     });
 
-    // এখানে আর return করা হয়নি → void safe
+ 
   } catch (err: any) {
     res.status(500).json({
       status: "error",

@@ -470,56 +470,7 @@ export const searchUsersService = async (searchTerm: string) => {
 
 
 
-// export const ProxysetService = async (req: Request) => {
-//   try {
-//     const userId = req.user?.id; 
-//     const ProxysetUserId = req.params.proxysetId;
 
- 
-
-//     if (!userId || !ProxysetUserId || !mongoose.Types.ObjectId.isValid(userId) || !mongoose.Types.ObjectId.isValid(ProxysetUserId)) {
-//       return { status: 'failed', message: 'Invalid user or followed user ID' };
-//     }
-
-//     if (userId === ProxysetUserId) {
-//       return { status: 'failed', message: "You cannot follow yourself" };
-//     }
-
-//     const ProxysetUserIdObjectId = new mongoose.Types.ObjectId(ProxysetUserId);
-
-//     const user = await User.findById(userId);
-//     if (!user) {
-//       return { status: 'failed', message: 'User not found' };
-//     }
-//   console.log("ProxysetId:", user?.proxysetId);
-//     const followedUser = await User.findById(ProxysetUserIdObjectId);
-//     if (!followedUser) {
-//       return { status: 'failed', message: "Followed user not found" };
-//     }
-
-//     if (user.proxysetId.length >= 2) {
-    
-//       user.proxysetId[0] = ProxysetUserIdObjectId; 
-
-//       await user.save();
-
-//       return { status: 'success', message: 'User followed successfully, updated first ProxySet', data: user };
-//     }
-
-    
-//     if (user.proxysetId.includes(ProxysetUserIdObjectId)) {
-//       return { status: 'failed', message: "You are already following this user" };
-//     }
-
-//     user.proxysetId.push(ProxysetUserIdObjectId);
-
-//     await user.save();
-
-//     return { status: 'success', message: 'User followed successfully', data: user };
-//   } catch (error) {
-//       return {status:'failed', data: error};
-//   }
-// };
 
 export const ProxysetService = async (req: Request) => {
   try {
@@ -592,6 +543,8 @@ export const getProxysetData = async (userId: string) => {
             email: 1,
             phoneNumber: 1,
             imgUrl: 1,
+            firstName: 1,
+            lastName: 1,
             role: 1,
             followers: 1,
           },
@@ -1404,6 +1357,7 @@ export const getUsersWhoSetMyProxyService = async (
       _id: user._id.toString(),
       email: user.email,
       phoneNumber: user.phoneNumber,
+      imgUrl: user.imgUrl,
       firstName: user.firstName,
       lastName: user.lastName,
     }));
