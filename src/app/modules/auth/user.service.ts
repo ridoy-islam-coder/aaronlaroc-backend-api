@@ -213,6 +213,200 @@ export const updateProxyUserAtIndexService = async (req: Request) => {
 
 
 
+export const createProxyUserAtIndexService = async (req: Request) => {
+  try {
+    const ownerId = req.user?.id;
+    const { index, userId } = req.body;
+
+    // ================= VALIDATION =================
+
+    if (!ownerId) {
+      return {
+        status: "failed",
+        message: "Unauthorized",
+      };
+    }
+
+    if (index === undefined || userId === undefined) {
+      return {
+        status: "failed",
+        message: "index and userId are required",
+      };
+    }
+
+    if (!Types.ObjectId.isValid(userId)) {
+      return {
+        status: "failed",
+        message: "Invalid userId",
+      };
+    }
+
+    // ================= FIND OWNER =================
+
+    const owner = await User.findById(ownerId);
+
+    if (!owner) {
+      return {
+        status: "failed",
+        message: "User not found",
+      };
+    }
+
+    // init array
+    if (!owner.proxysetId) {
+      owner.proxysetId = [];
+    }
+
+    // ================= INDEX VALIDATION =================
+
+    if (index < 0 || index > owner.proxysetId.length) {
+      return {
+        status: "failed",
+        message: "Invalid index position",
+      };
+    }
+
+    // ================= MAX LIMIT (OPTIONAL) =================
+    const MAX_PROXY = 5;
+
+    if (owner.proxysetId.length >= MAX_PROXY) {
+      return {
+        status: "failed",
+        message: `Maximum ${MAX_PROXY} proxy users allowed`,
+      };
+    }
+
+    // ================= CHECK USER EXISTS =================
+
+    const proxyUser = await User.findById(userId);
+
+    if (!proxyUser) {
+      return {
+        status: "failed",
+        message: "Proxy user not found",
+      };
+    }
+
+    // ================= DUPLICATE CHECK =================
+
+    const alreadyExists = owner.proxysetId.some(
+      (id: any) => id.toString() === userId
+    );
+
+    if (alreadyExists) {
+      return {
+        status: "failed",
+        message: "User already added as proxy",
+      };
+    }
+
+    // ================= INSERT AT INDEX =================
+
+    owner.proxysetId.splice(index, 0, new Types.ObjectId(userId));
+
+    await owner.save();
+
+    return {
+      status: "success",
+      message: "Proxy user created successfully",
+      data: owner.proxysetId,
+    };
+  } catch (error) {
+    return {
+      status: "failed",
+      message: "Something went wrong",
+      error,
+    };
+  }
+};
+
+
+
+
+
+
+
+
+
+export const removeProxyUserService = async (req: Request) => {
+  try {
+    const loggedInUserId = req.user?.id; // token user
+    const { userId, index } = req.body;
+
+    // ✅ Auth check
+    if (!loggedInUserId) {
+      return {
+        status: "failed",
+        message: "Unauthorized",
+      };
+    }
+
+    // ✅ ObjectId validation
+    if (!Types.ObjectId.isValid(userId)) {
+      return {
+        status: "failed",
+        message: "Invalid userId",
+      };
+    }
+
+    // ✅ SECURITY CHECK (IMPORTANT)
+    if (loggedInUserId !== userId) {
+      return {
+        status: "failed",
+        message: "You can remove only your own proxy",
+      };
+    }
+
+    // ✅ Find user
+    const user = await User.findById(userId);
+
+    if (!user) {
+      return {
+        status: "failed",
+        message: "User not found",
+      };
+    }
+
+    if (!user.proxysetId || user.proxysetId.length === 0) {
+      return {
+        status: "failed",
+        message: "Proxy list empty",
+      };
+    }
+
+    // ✅ index validation
+    if (index === undefined || index < 0 || index >= user.proxysetId.length) {
+      return {
+        status: "failed",
+        message: "Invalid index",
+      };
+    }
+
+    // ✅ Remove proxy
+    const removedProxy = user.proxysetId[index];
+
+    user.proxysetId.splice(index, 1);
+
+    await user.save();
+
+    return {
+      status: "success",
+      message: "Proxy removed successfully",
+      removedProxy,
+      data: user.proxysetId,
+    };
+  } catch (error) {
+    return {
+      status: "failed",
+      message: "Something went wrong",
+      error,
+    };
+  }
+};
+
+
+
+
 
 
 

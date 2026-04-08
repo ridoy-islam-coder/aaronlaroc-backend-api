@@ -3,6 +3,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.User = void 0;
 const mongoose_1 = require("mongoose");
 const user_interface_1 = require("./user.interface");
+// import bcrypt from 'bcrypt';
 const userSchema = new mongoose_1.Schema({
     firstName: {
         type: String,
@@ -62,4 +63,27 @@ const userSchema = new mongoose_1.Schema({
 }, {
     timestamps: true, versionKey: false
 });
+// // Pre-save middleware to hash password
+// userSchema.pre('save', async function (next) {
+//   const user = this;
+//   if (!user.isModified('password')) return next(); // Only hash if password changed
+//   try {
+//     const salt = await bcrypt.genSalt(10);
+//     user.password = await bcrypt.hash(user.password, salt);
+//     next();
+//   } catch (err) {
+//     next(err);
+//   }
+// });
+// // Optional: method to compare password during login
+// userSchema.methods.comparePassword = async function (candidatePassword: string) {
+//   return bcrypt.compare(candidatePassword, this.password);
+// };
+// // Remove password from returned JSON
+// userSchema.set('toJSON', {
+//   transform: (doc, ret) => {
+//     delete ret.password;
+//     return ret;
+//   }
+// });
 exports.User = (0, mongoose_1.model)("User", userSchema);

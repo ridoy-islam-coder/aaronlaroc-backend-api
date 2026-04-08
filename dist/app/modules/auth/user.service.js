@@ -36,7 +36,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.adminLoginService = exports.getUsersWhoSetMyProxyService = exports.UserAnalysisService = exports.getCountsService = exports.adminUpdateUserService = exports.updateUserService = exports.getNewUsersLast10DaysService = exports.updatePassword = exports.codeVerification = exports.adminEmailService = exports.getUsersWhoAddedMeAsProxyService = exports.getAllUserDataService = exports.getAllOwnUserDataService = exports.getUserFullProfileService = exports.getProxysetData = exports.ProxysetService = exports.searchUsersService = exports.getallUsers = exports.userSelfUpdateService = exports.adminDeleteUserService = exports.getprofileService = exports.LoginInUser = exports.existingUser = void 0;
+exports.adminLoginService = exports.getUsersWhoSetMyProxyService = exports.UserAnalysisService = exports.getCountsService = exports.adminUpdateUserService = exports.updateUserService = exports.getNewUsersLast10DaysService = exports.updatePassword = exports.codeVerification = exports.adminEmailService = exports.getUsersWhoAddedMeAsProxyService = exports.getAllUserDataService = exports.getAllOwnUserDataService = exports.getUserFullProfileService = exports.getProxysetData = exports.ProxysetService = exports.searchUsersService = exports.getallUsers = exports.userSelfUpdateService = exports.adminDeleteUserService = exports.removeProxyUserService = exports.createProxyUserAtIndexService = exports.updateProxyUserAtIndexService = exports.getProxyUsersService = exports.getprofileService = exports.LoginInUser = exports.existingUser = void 0;
 const user_model_1 = require("./user.model");
 const bcryptjs_1 = __importDefault(require("bcryptjs"));
 const jsonwebtoken_1 = __importDefault(require("jsonwebtoken"));
@@ -127,6 +127,208 @@ const getprofileService = async (req) => {
     }
 };
 exports.getprofileService = getprofileService;
+// মূল ইউজারের proxysetId অনুযায়ী ইউজারদের ডেটা আনা
+const getProxyUsersService = async (req) => {
+    try {
+        const user_id = req.user?.id; // token middleware থেকে আসা
+        const user = await user_model_1.User.findById(user_id)
+            .populate("proxysetId", "firstName lastName email imgUrl role")
+            .exec();
+        if (!user) {
+            return { status: "failed", message: "User not found" };
+        }
+        return {
+            status: "success",
+            message: "Proxy users fetched successfully",
+            data: user.proxysetId
+        };
+    }
+    catch (error) {
+        return { status: "failed", data: error };
+    }
+};
+exports.getProxyUsersService = getProxyUsersService;
+const updateProxyUserAtIndexService = async (req) => {
+    try {
+        const user_id = req.user?.id; // token middleware থেকে আসা
+        const { index, newUserId } = req.body; // body থেকে index এবং নতুন userId নাও
+        if (!mongoose_1.Types.ObjectId.isValid(newUserId)) {
+            return { status: "failed", message: "Invalid newUserId" };
+        }
+        const user = await user_model_1.User.findById(user_id);
+        if (!user) {
+            return { status: "failed", message: "User not found" };
+        }
+        if (!user.proxysetId)
+            user.proxysetId = [];
+        // আগের userId delete করা ওই index থেকে
+        if (user.proxysetId[index]) {
+            user.proxysetId.splice(index, 1);
+        }
+        // নতুন userId সেই index-এ set করা
+        user.proxysetId.splice(index, 0, newUserId);
+        await user.save();
+        return {
+            status: "success",
+            message: "Proxy user updated successfully",
+            data: user.proxysetId,
+        };
+    }
+    catch (error) {
+        return { status: "failed", data: error };
+    }
+};
+exports.updateProxyUserAtIndexService = updateProxyUserAtIndexService;
+const createProxyUserAtIndexService = async (req) => {
+    try {
+        const ownerId = req.user?.id;
+        const { index, userId } = req.body;
+        // ================= VALIDATION =================
+        if (!ownerId) {
+            return {
+                status: "failed",
+                message: "Unauthorized",
+            };
+        }
+        if (index === undefined || userId === undefined) {
+            return {
+                status: "failed",
+                message: "index and userId are required",
+            };
+        }
+        if (!mongoose_1.Types.ObjectId.isValid(userId)) {
+            return {
+                status: "failed",
+                message: "Invalid userId",
+            };
+        }
+        // ================= FIND OWNER =================
+        const owner = await user_model_1.User.findById(ownerId);
+        if (!owner) {
+            return {
+                status: "failed",
+                message: "User not found",
+            };
+        }
+        // init array
+        if (!owner.proxysetId) {
+            owner.proxysetId = [];
+        }
+        // ================= INDEX VALIDATION =================
+        if (index < 0 || index > owner.proxysetId.length) {
+            return {
+                status: "failed",
+                message: "Invalid index position",
+            };
+        }
+        // ================= MAX LIMIT (OPTIONAL) =================
+        const MAX_PROXY = 5;
+        if (owner.proxysetId.length >= MAX_PROXY) {
+            return {
+                status: "failed",
+                message: `Maximum ${MAX_PROXY} proxy users allowed`,
+            };
+        }
+        // ================= CHECK USER EXISTS =================
+        const proxyUser = await user_model_1.User.findById(userId);
+        if (!proxyUser) {
+            return {
+                status: "failed",
+                message: "Proxy user not found",
+            };
+        }
+        // ================= DUPLICATE CHECK =================
+        const alreadyExists = owner.proxysetId.some((id) => id.toString() === userId);
+        if (alreadyExists) {
+            return {
+                status: "failed",
+                message: "User already added as proxy",
+            };
+        }
+        // ================= INSERT AT INDEX =================
+        owner.proxysetId.splice(index, 0, new mongoose_1.Types.ObjectId(userId));
+        await owner.save();
+        return {
+            status: "success",
+            message: "Proxy user created successfully",
+            data: owner.proxysetId,
+        };
+    }
+    catch (error) {
+        return {
+            status: "failed",
+            message: "Something went wrong",
+            error,
+        };
+    }
+};
+exports.createProxyUserAtIndexService = createProxyUserAtIndexService;
+const removeProxyUserService = async (req) => {
+    try {
+        const loggedInUserId = req.user?.id; // token user
+        const { userId, index } = req.body;
+        // ✅ Auth check
+        if (!loggedInUserId) {
+            return {
+                status: "failed",
+                message: "Unauthorized",
+            };
+        }
+        // ✅ ObjectId validation
+        if (!mongoose_1.Types.ObjectId.isValid(userId)) {
+            return {
+                status: "failed",
+                message: "Invalid userId",
+            };
+        }
+        // ✅ SECURITY CHECK (IMPORTANT)
+        if (loggedInUserId !== userId) {
+            return {
+                status: "failed",
+                message: "You can remove only your own proxy",
+            };
+        }
+        // ✅ Find user
+        const user = await user_model_1.User.findById(userId);
+        if (!user) {
+            return {
+                status: "failed",
+                message: "User not found",
+            };
+        }
+        if (!user.proxysetId || user.proxysetId.length === 0) {
+            return {
+                status: "failed",
+                message: "Proxy list empty",
+            };
+        }
+        // ✅ index validation
+        if (index === undefined || index < 0 || index >= user.proxysetId.length) {
+            return {
+                status: "failed",
+                message: "Invalid index",
+            };
+        }
+        // ✅ Remove proxy
+        const removedProxy = user.proxysetId[index];
+        user.proxysetId.splice(index, 1);
+        await user.save();
+        return {
+            status: "success",
+            message: "Proxy removed successfully",
+            removedProxy,
+            data: user.proxysetId,
+        };
+    }
+    catch (error) {
+        return {
+            status: "failed",
+            message: "Something went wrong",
+            error,
+        };
+    }
+};
+exports.removeProxyUserService = removeProxyUserService;
 const adminDeleteUserService = async (req) => {
     try {
         const adminId = req.user?.id;
@@ -296,41 +498,6 @@ const searchUsersService = async (searchTerm) => {
     return users;
 };
 exports.searchUsersService = searchUsersService;
-// export const ProxysetService = async (req: Request) => {
-//   try {
-//     const userId = req.user?.id; 
-//     const ProxysetUserId = req.params.proxysetId;
-//     if (!userId || !ProxysetUserId || !mongoose.Types.ObjectId.isValid(userId) || !mongoose.Types.ObjectId.isValid(ProxysetUserId)) {
-//       return { status: 'failed', message: 'Invalid user or followed user ID' };
-//     }
-//     if (userId === ProxysetUserId) {
-//       return { status: 'failed', message: "You cannot follow yourself" };
-//     }
-//     const ProxysetUserIdObjectId = new mongoose.Types.ObjectId(ProxysetUserId);
-//     const user = await User.findById(userId);
-//     if (!user) {
-//       return { status: 'failed', message: 'User not found' };
-//     }
-//   console.log("ProxysetId:", user?.proxysetId);
-//     const followedUser = await User.findById(ProxysetUserIdObjectId);
-//     if (!followedUser) {
-//       return { status: 'failed', message: "Followed user not found" };
-//     }
-//     if (user.proxysetId.length >= 2) {
-//       user.proxysetId[0] = ProxysetUserIdObjectId; 
-//       await user.save();
-//       return { status: 'success', message: 'User followed successfully, updated first ProxySet', data: user };
-//     }
-//     if (user.proxysetId.includes(ProxysetUserIdObjectId)) {
-//       return { status: 'failed', message: "You are already following this user" };
-//     }
-//     user.proxysetId.push(ProxysetUserIdObjectId);
-//     await user.save();
-//     return { status: 'success', message: 'User followed successfully', data: user };
-//   } catch (error) {
-//       return {status:'failed', data: error};
-//   }
-// };
 const ProxysetService = async (req) => {
     try {
         const userId = req.user?.id;
@@ -390,6 +557,8 @@ const getProxysetData = async (userId) => {
                         email: 1,
                         phoneNumber: 1,
                         imgUrl: 1,
+                        firstName: 1,
+                        lastName: 1,
                         role: 1,
                         followers: 1,
                     },
@@ -928,6 +1097,7 @@ const getUsersWhoSetMyProxyService = async (myUserId) => {
             _id: user._id.toString(),
             email: user.email,
             phoneNumber: user.phoneNumber,
+            imgUrl: user.imgUrl,
             firstName: user.firstName,
             lastName: user.lastName,
         }));

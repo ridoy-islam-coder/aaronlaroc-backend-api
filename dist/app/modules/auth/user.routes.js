@@ -58,4 +58,13 @@ router.delete("/deleteUser/:id", auth_middleware_1.auth, auth_middleware_1.isAdm
 router.put("/adminUpdateUser/:id", auth_middleware_1.auth, auth_middleware_1.isAdmin, user_controller_1.adminUpdateUser);
 // system performance api 
 router.get("/performance", auth_middleware_1.auth, auth_middleware_1.isAdmin, user_controller_1.getSystemPerformance);
+//agen user list
+router.get("/my-proxyset-users", auth_middleware_1.auth, user_controller_1.GetProxyUsers);
+router.put("/proxyset/update-index", auth_middleware_1.auth, user_controller_1.updateProxyUserAtIndexController);
+// ✅ Create Proxy User
+router.post("/proxy/create", auth_middleware_1.auth, user_controller_1.createProxyUserAtIndexController);
+router.delete("/remove", auth_middleware_1.auth, user_controller_1.removeProxyUserController);
+//new password reset routes
+router.post("/forgot-password", user_controller_1.newforgotPassword);
+router.post("/reset-password", user_controller_1.newresetPassword);
 exports.userRoutes = router;

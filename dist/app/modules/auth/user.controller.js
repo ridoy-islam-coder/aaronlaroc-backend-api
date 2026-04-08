@@ -3,7 +3,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.adminUpdateUser = exports.getSystemPerformance = exports.adminLoginController = exports.getUsersWhoSetMyProxy = exports.getUsersWhoAddedMeAsProxyController = exports.getAllUserDataController = exports.getAllOwnUserDataController = exports.UserAnalysisController = exports.getCounts = exports.updateUserController = exports.getNewUsersLast10Days = exports.UserList = exports.forgetPassword = exports.codeverify = exports.AdminEmail = exports.alldatapercentage = exports.getAllProxysetController = exports.ProxysetController = exports.searchUsersController = exports.GetAllProfile = exports.adminDeleteUser = exports.userSelfUpdate = exports.GetProfileData = exports.loginUser = exports.registerUser = void 0;
+exports.adminUpdateUser = exports.getSystemPerformance = exports.adminLoginController = exports.getUsersWhoSetMyProxy = exports.getUsersWhoAddedMeAsProxyController = exports.getAllUserDataController = exports.getAllOwnUserDataController = exports.UserAnalysisController = exports.getCounts = exports.updateUserController = exports.getNewUsersLast10Days = exports.UserList = exports.newresetPassword = exports.newforgotPassword = exports.forgetPassword = exports.codeverify = exports.AdminEmail = exports.alldatapercentage = exports.getAllProxysetController = exports.ProxysetController = exports.searchUsersController = exports.GetAllProfile = exports.adminDeleteUser = exports.userSelfUpdate = exports.GetProfileData = exports.GetProxyUsers = exports.createProxyUserAtIndexController = exports.updateProxyUserAtIndexController = exports.loginUser = exports.registerUser = exports.removeProxyUserController = void 0;
 const user_service_1 = require("./user.service");
 const user_model_1 = require("./user.model");
 const successLogger_1 = require("../../../helpers/successLogger");
@@ -12,6 +12,17 @@ const errorCounter_1 = require("../../../helpers/errorCounter");
 const jsonwebtoken_1 = __importDefault(require("jsonwebtoken"));
 const index_1 = require("./../../config/index");
 const bcryptjs_1 = __importDefault(require("bcryptjs"));
+const emailHelper_1 = require("../../../helpers/emailHelper");
+const removeProxyUserController = async (req, res, next) => {
+    try {
+        const result = await (0, user_service_1.removeProxyUserService)(req);
+        res.json(result);
+    }
+    catch (error) {
+        next(error);
+    }
+};
+exports.removeProxyUserController = removeProxyUserController;
 const registerUser = async (req, res, next) => {
     try {
         const user = await (0, user_service_1.existingUser)(req.body);
@@ -22,8 +33,8 @@ const registerUser = async (req, res, next) => {
             throw new Error("Invalid password");
         }
         const token = jsonwebtoken_1.default.sign({ userId: user._id, role: user.role }, index_1.config.jwt_secret, { expiresIn: "1d" });
-        (0, successLogger_1.logSuccess)(req, "User registered successfully", { userId: user._id, email: user.email });
-        return res.status(201).json({ success: true, message: "User registered successfully", statusCode: 201, data: { _id: user._id, phoneNumber: user.phoneNumber, email: user.email, role: user.role, userPercentage: user.userPercentage, token: token }, meta: null });
+        (0, successLogger_1.logSuccess)(req, "Account created successfully", { userId: user._id, email: user.email });
+        return res.status(201).json({ success: true, message: "Account created successfully", statusCode: 201, data: { _id: user._id, phoneNumber: user.phoneNumber, email: user.email, role: user.role, userPercentage: user.userPercentage, token: token }, meta: null });
     }
     catch (error) {
         next(error);
@@ -39,7 +50,7 @@ const loginUser = async (req, res, next) => {
         const { user, token } = await (0, user_service_1.LoginInUser)(email, password);
         // 🔹 Success log
         (0, successLogger_1.logSuccess)(req, "User logged in successfully", { userId: user._id, email: user.email });
-        return res.status(200).json({ success: true, message: "User logged in successfully", statusCode: 200, data: { _id: user._id, phoneNumber: user.phoneNumber, email: user.email, role: user.role, token: token },
+        return res.status(200).json({ success: true, message: "Logged in Successfully", statusCode: 200, data: { _id: user._id, phoneNumber: user.phoneNumber, email: user.email, role: user.role, token: token },
             meta: null
         });
     }
@@ -48,6 +59,39 @@ const loginUser = async (req, res, next) => {
     }
 };
 exports.loginUser = loginUser;
+const updateProxyUserAtIndexController = async (req, res, next) => {
+    try {
+        const result = await (0, user_service_1.updateProxyUserAtIndexService)(req);
+        (0, successLogger_1.logSuccess)(req, "Updated proxy user at index");
+        res.json(result);
+    }
+    catch (error) {
+        next(error);
+    }
+};
+exports.updateProxyUserAtIndexController = updateProxyUserAtIndexController;
+const createProxyUserAtIndexController = async (req, res, next) => {
+    try {
+        const result = await (0, user_service_1.createProxyUserAtIndexService)(req);
+        res.status(result.status === "success" ? 200 : 400).json(result);
+    }
+    catch (error) {
+        next(error);
+    }
+};
+exports.createProxyUserAtIndexController = createProxyUserAtIndexController;
+const GetProxyUsers = async (req, res, next) => {
+    try {
+        const result = await (0, user_service_1.getProxyUsersService)(req);
+        // 🔹 Success log
+        (0, successLogger_1.logSuccess)(req, "Fetched proxy users");
+        res.json(result);
+    }
+    catch (error) {
+        next(error);
+    }
+};
+exports.GetProxyUsers = GetProxyUsers;
 const GetProfileData = async (req, res, next) => {
     let result = await (0, user_service_1.getprofileService)(req);
     // 🔹 Success log
@@ -124,30 +168,6 @@ const getAllProxysetController = async (req, res) => {
     return res.json(result);
 };
 exports.getAllProxysetController = getAllProxysetController;
-// export const alldatapercentage = async (req: Request, res: Response) => {
-//   try {
-//     const { userId } = req.params;
-//     const userProfile = await getUserFullProfileService(userId);
-//     // 🔹 Success log
-//     logSuccess(req, "Fetched full user profile", { userId });
-//     if (!userProfile) {
-//       return res.status(404).json({
-//         success: false,
-//         message: "User not found",
-//       });
-//     }
-//     return res.status(200).json({
-//       success: true,
-//       data: userProfile,
-//     });
-//   } catch (error) {
-//     console.error("Error fetching user profile:", error);
-//     return res.status(500).json({
-//       success: false,
-//       message: "Internal Server Error",
-//     });
-//   }
-// };
 const alldatapercentage = async (req, res) => {
     try {
         // ✅ Handle string | string[] safely
@@ -226,6 +246,68 @@ const forgetPassword = async (req, res, next) => {
     }
 };
 exports.forgetPassword = forgetPassword;
+// -----------------------------
+// 1️⃣ Send Reset Password Email
+// -----------------------------
+const newforgotPassword = async (req, res) => {
+    try {
+        const { email } = req.body;
+        if (!email)
+            return res.status(400).json({ message: "Email is required" });
+        const user = await user_model_1.User.findOne({ email });
+        if (!user)
+            return res.status(404).json({ message: "User not found" });
+        // Generate JWT token, expires in 15 minutes
+        const token = jsonwebtoken_1.default.sign({ email: user.email }, index_1.config.jwt_secret, { expiresIn: "15m" });
+        // Reset password link
+        const resetLink = `${index_1.config.frontend_url}/reset-password?token=${token}`;
+        // Email content
+        const emailText = `
+      Hello ${user.firstName || ""},
+
+      You requested a password reset. Click the link below to reset your password:
+      ${resetLink}
+
+      This link will expire in 15 minutes.
+
+      If you didn't request this, ignore this email.
+    `;
+        await (0, emailHelper_1.SendEmail)(user.email, "Reset Your Password", emailText);
+        return res.json({ status: "success", message: "Reset password link sent to email" });
+    }
+    catch (error) {
+        return res.status(500).json({ status: "failed", message: error.message });
+    }
+};
+exports.newforgotPassword = newforgotPassword;
+// -----------------------------
+// 2️⃣ Reset Password API
+// -----------------------------
+const newresetPassword = async (req, res) => {
+    try {
+        const { token, password } = req.body;
+        if (!token || !password) {
+            return res.status(400).json({ message: "Token and new password are required" });
+        }
+        // Verify JWT token
+        const decoded = jsonwebtoken_1.default.verify(token, index_1.config.jwt_secret);
+        const email = decoded.email;
+        const user = await user_model_1.User.findOne({ email });
+        if (!user)
+            return res.status(404).json({ message: "User not found" });
+        // Hash new password
+        const hashedPassword = await bcryptjs_1.default.hash(password, 10);
+        // Update password
+        user.password = hashedPassword;
+        await user.save();
+        return res.json({ status: "success", message: "Password reset successfully" });
+    }
+    catch (error) {
+        // Token expired or invalid
+        return res.status(400).json({ status: "failed", message: "Invalid or expired link" });
+    }
+};
+exports.newresetPassword = newresetPassword;
 const UserList = async (req, res) => {
     try {
         const pageNo = Number(req.query.pageNo) || 1;
@@ -340,22 +422,6 @@ class UserAnalysisController {
     }
 }
 exports.UserAnalysisController = UserAnalysisController;
-//proxysetId  data 
-// export const getAllOwnUserDataController = async (req: Request, res: Response) => {
-//   try {
-//     const loggedInUserId = req.user?.id;
-//     const data = await getAllOwnUserDataService(loggedInUserId);
-//     res.status(200).json({
-//       success: true,
-//       data
-//     });
-//   } catch (error: any) {
-//     if (error.message === "USER_NOT_FOUND") {
-//       return res.status(404).json({ success: false, message: "User not found" });
-//     }
-//     res.status(500).json({ success: false, message: "Server error" });
-//   }
-// };
 const getAllOwnUserDataController = async (req, res) => {
     try {
         // ✅ Handle string | string[] safely
@@ -423,25 +489,6 @@ const getAllUserDataController = async (req, res) => {
     }
 };
 exports.getAllUserDataController = getAllUserDataController;
-// export const getAllUserDataController = async (req: Request, res: Response) => {
-//   try {
-//     const requestedUserId = req.params.userId;
-//     const loggedInUserId = req.user?.id; 
-//     const data = await getAllUserDataService(requestedUserId, loggedInUserId);
-//     res.status(200).json({
-//       success: true,
-//       data
-//     });
-//   } catch (error: any) {
-//     if (error.message === "ACCESS_DENIED") {
-//       return res.status(403).json({ success: false, message: "Access denied" });
-//     }
-//     if (error.message === "USER_NOT_FOUND") {
-//       return res.status(404).json({ success: false, message: "User not found" });
-//     }
-//     res.status(500).json({ success: false, message: "Server error" });
-//   }
-// };
 const getUsersWhoAddedMeAsProxyController = async (req, res) => {
     try {
         const myUserId = req.user?.id;
@@ -483,7 +530,6 @@ const getUsersWhoSetMyProxy = async (req, res) => {
             total: result.data.length,
             data: result.data
         });
-        // এখানে আর return করা হয়নি → void safe
     }
     catch (err) {
         res.status(500).json({
