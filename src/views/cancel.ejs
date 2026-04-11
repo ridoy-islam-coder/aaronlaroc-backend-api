@@ -96,25 +96,14 @@
     </div>
     <h1>Payment Failed</h1>
     <p>Your payment could not be processed. Please try again.</p>
-   
+    <div class="session-id">Session ID: <%= sessionId %>
     </div>
 
-    <!-- <button  class="btn" id="retryPayment">
-      Retry Payment
-    </button> -->
 
-    <button  class="btn" id="retryPayment">
-      Retry Payment
-    </button>
 
-    <script>
-      document.addEventListener("DOMContentLoaded", function () {
-        document.getElementById("retryPayment").onclick = function (e) {
-          e.preventDefault();
-          window.location.replace("https://myplaneer.com/plans");
-        };
-      });
-    </script>
+    <a href="https://myplaneer.com/plans" class="btn" style="margin-top: 1rem; background-color: #3b82f6;" id="choosePlan">
+       Retry Payment
+    </a>
   </div>
 </body>
 
