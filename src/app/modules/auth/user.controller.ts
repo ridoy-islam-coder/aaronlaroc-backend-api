@@ -1,5 +1,5 @@
 import { NextFunction, Request, Response } from "express";
-import { adminDeleteUserService, adminEmailService, adminLoginService, adminUpdateUserService, codeVerification,  createProxyUserAtIndexService,    existingUser,   getAllOwnUserDataService,   getAllUserDataService,  getallUsers, getCountsService, getNewUsersLast10DaysService, getprofileService, getProxysetData, getProxyUsersService, getUserFullProfileService,getUsersWhoAddedMeAsProxyService,getUsersWhoSetMyProxyService,LoginInUser,  ProxysetService, removeProxyUserService, searchUsersService,  updatePassword, updateProxyUserAtIndexService, updateUserService, UserAnalysisService, userSelfUpdateService } from "./user.service";
+import { adminDeleteUserService, adminEmailService, adminLoginService, adminUpdateUserService, codeVerification,   existingUser,   getAllOwnUserDataService,   getAllUserDataService,  getallUsers, getCountsService, getNewUsersLast10DaysService, getprofileService, getProxysetData, getProxyUsersService, getUserFullProfileService,getUsersWhoAddedMeAsProxyService,getUsersWhoSetMyProxyService,LoginInUser,  ProxysetService, removeProxyUserService, searchUsersService,  updatePassword, updateProxyUserAtIndexService, updateUserService, UserAnalysisService, userSelfUpdateService } from "./user.service";
 import { ProxyUser } from "./user.interface";
 import { User } from "./user.model";
 import { logSuccess } from "../../../helpers/successLogger";
@@ -113,20 +113,6 @@ export const updateProxyUserAtIndexController = async (req: Request, res: Respon
 
 
 
-
-export const createProxyUserAtIndexController = async (
-  req: Request,
-  res: Response,
-  next: NextFunction
-) => {
-  try {
-    const result = await createProxyUserAtIndexService(req);
-
-    res.status(result.status === "success" ? 200 : 400).json(result);
-  } catch (error) {
-    next(error);
-  }
-};
 
 
 

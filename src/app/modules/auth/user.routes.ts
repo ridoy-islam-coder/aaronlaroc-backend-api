@@ -1,5 +1,5 @@
 import express from "express";
-import { adminDeleteUser, AdminEmail, adminLoginController, adminUpdateUser, alldatapercentage, codeverify,      createProxyUserAtIndexController,     forgetPassword,  getAllOwnUserDataController,  GetAllProfile, getAllProxysetController, getAllUserDataController, getCounts, getNewUsersLast10Days, GetProfileData, GetProxyUsers, getSystemPerformance, getUsersWhoAddedMeAsProxyController, getUsersWhoSetMyProxy, loginUser,  newforgotPassword,  newresetPassword,  ProxysetController, registerUser, removeProxyUserController, searchUsersController, updateProxyUserAtIndexController, updateUserController, UserAnalysisController, UserList, userSelfUpdate,  } from "./user.controller";
+import { adminDeleteUser, AdminEmail, adminLoginController, adminUpdateUser, alldatapercentage, codeverify,      forgetPassword,  getAllOwnUserDataController,  GetAllProfile, getAllProxysetController, getAllUserDataController, getCounts, getNewUsersLast10Days, GetProfileData, GetProxyUsers, getSystemPerformance, getUsersWhoAddedMeAsProxyController, getUsersWhoSetMyProxy, loginUser,  newforgotPassword,  newresetPassword,  ProxysetController, registerUser, removeProxyUserController, searchUsersController, updateProxyUserAtIndexController, updateUserController, UserAnalysisController, UserList, userSelfUpdate,  } from "./user.controller";
 import { auth, isAdmin, } from './../../middleware/auth.middleware';
 
 
@@ -127,7 +127,7 @@ router.get("/my-proxyset-users", auth, GetProxyUsers);
 router.put("/proxyset/update-index", auth, updateProxyUserAtIndexController);
 
 // ✅ Create Proxy User
-router.post("/proxy/create",auth,createProxyUserAtIndexController);
+router.post("/proxyset",auth,ProxysetController);
 
 
 router.delete("/remove",auth,removeProxyUserController);
