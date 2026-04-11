@@ -3,7 +3,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.adminUpdateUser = exports.getSystemPerformance = exports.adminLoginController = exports.getUsersWhoSetMyProxy = exports.getUsersWhoAddedMeAsProxyController = exports.getAllUserDataController = exports.getAllOwnUserDataController = exports.UserAnalysisController = exports.getCounts = exports.updateUserController = exports.getNewUsersLast10Days = exports.UserList = exports.newresetPassword = exports.newforgotPassword = exports.forgetPassword = exports.codeverify = exports.AdminEmail = exports.alldatapercentage = exports.getAllProxysetController = exports.ProxysetController = exports.searchUsersController = exports.GetAllProfile = exports.adminDeleteUser = exports.userSelfUpdate = exports.GetProfileData = exports.GetProxyUsers = exports.createProxyUserAtIndexController = exports.updateProxyUserAtIndexController = exports.loginUser = exports.registerUser = exports.removeProxyUserController = void 0;
+exports.adminUpdateUser = exports.getSystemPerformance = exports.adminLoginController = exports.getUsersWhoSetMyProxy = exports.getUsersWhoAddedMeAsProxyController = exports.getAllUserDataController = exports.getAllOwnUserDataController = exports.UserAnalysisController = exports.getCounts = exports.updateUserController = exports.getNewUsersLast10Days = exports.UserList = exports.newresetPassword = exports.newforgotPassword = exports.forgetPassword = exports.codeverify = exports.AdminEmail = exports.alldatapercentage = exports.getAllProxysetController = exports.ProxysetController = exports.searchUsersController = exports.GetAllProfile = exports.adminDeleteUser = exports.userSelfUpdate = exports.GetProfileData = exports.GetProxyUsers = exports.updateProxyUserAtIndexController = exports.loginUser = exports.registerUser = exports.removeProxyUserController = void 0;
 const user_service_1 = require("./user.service");
 const user_model_1 = require("./user.model");
 const successLogger_1 = require("../../../helpers/successLogger");
@@ -70,16 +70,6 @@ const updateProxyUserAtIndexController = async (req, res, next) => {
     }
 };
 exports.updateProxyUserAtIndexController = updateProxyUserAtIndexController;
-const createProxyUserAtIndexController = async (req, res, next) => {
-    try {
-        const result = await (0, user_service_1.createProxyUserAtIndexService)(req);
-        res.status(result.status === "success" ? 200 : 400).json(result);
-    }
-    catch (error) {
-        next(error);
-    }
-};
-exports.createProxyUserAtIndexController = createProxyUserAtIndexController;
 const GetProxyUsers = async (req, res, next) => {
     try {
         const result = await (0, user_service_1.getProxyUsersService)(req);

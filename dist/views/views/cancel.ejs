@@ -1,10 +1,11 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Payment Failed</title>
-<style>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Payment Failed</title>
+  <style>
     body {
       margin: 0;
       font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
@@ -15,15 +16,17 @@
       min-height: 100vh;
       padding: 1rem;
     }
+
     .card {
       background: #fff;
       border-radius: 1rem;
       padding: 2rem;
       max-width: 400px;
       width: 100%;
-      box-shadow: 0 10px 25px rgba(0,0,0,0.1);
+      box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
       text-align: center;
     }
+
     .icon {
       width: 60px;
       height: 60px;
@@ -34,42 +37,85 @@
       align-items: center;
       justify-content: center;
     }
-    .icon svg { width:32px; height:32px; color:#ef4444; }
-    h1 { margin-top:1rem; margin-bottom:0.5rem; font-size:1.8rem; color:#111827; }
-    p { color:#6b7280; margin-bottom:1rem; }
-    .session-id { font-size:0.8rem; color:#9ca3af; margin-bottom:1.5rem; }
-    .btn { display:block; width:100%; padding:0.75rem; border:none; border-radius:0.75rem; background-color:#ef4444; color:#fff; font-weight:600; text-decoration:none; transition: background 0.3s; }
-    .btn:hover { background-color:#b91c1c; }
-    @media(max-width:500px){ h1{ font-size:1.5rem; } }
-</style>
+
+    .icon svg {
+      width: 32px;
+      height: 32px;
+      color: #ef4444;
+    }
+
+    h1 {
+      margin-top: 1rem;
+      margin-bottom: 0.5rem;
+      font-size: 1.8rem;
+      color: #111827;
+    }
+
+    p {
+      color: #6b7280;
+      margin-bottom: 1rem;
+    }
+
+    .session-id {
+      font-size: 0.8rem;
+      color: #9ca3af;
+      margin-bottom: 1.5rem;
+    }
+
+    .btn {
+      display: block;
+      width: 100%;
+      padding: 0.75rem;
+      border: none;
+      border-radius: 0.75rem;
+      background-color: #ef4444;
+      color: #fff;
+      font-weight: 600;
+      text-decoration: none;
+      transition: background 0.3s;
+    }
+
+    .btn:hover {
+      background-color: #b91c1c;
+    }
+
+    @media(max-width:500px) {
+      h1 {
+        font-size: 1.5rem;
+      }
+    }
+  </style>
 </head>
+
 <body>
-<div class="card">
-<div class="icon">
-<svg fill="none" stroke="currentColor" stroke-width="3" viewBox="0 0 24 24">
-<path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12"/>
-</svg>
-</div>
-<h1>Payment Failed</h1>
-<p>Your payment could not be processed. Please try again.</p>
-<div class="session-id">Session ID: <%= sessionId %></div>
+  <div class="card">
+    <div class="icon">
+      <svg fill="none" stroke="currentColor" stroke-width="3" viewBox="0 0 24 24">
+        <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" />
+      </svg>
+    </div>
+    <h1>Payment Failed</h1>
+    <p>Your payment could not be processed. Please try again.</p>
+    <div class="session-id">Session ID: <%= sessionId %>
+    </div>
 
-<a href="#" class="btn" id="retryPayment">
-   Retry Payment
-</a>
+    <button  class="btn" id="retryPayment">
+      Retry Payment
+    </button>
 
-<a href="#" class="btn" id="retryPayment">
-   Retry Payment
-</a>
+    <button  class="btn" id="retryPayment">
+      Retry Payment
+    </button>
 
-<script>
-document.addEventListener("DOMContentLoaded", function () {
-    document.getElementById("retryPayment").onclick = function(e){
-        e.preventDefault();
-        window.location.replace("https://myplaneer.com/plans");
-    };
-});
-</script>
-</div>
+    <script>
+      document.addEventListener("DOMContentLoaded", function () {
+        document.getElementById("retryPayment").onclick = function (e) {
+          e.preventDefault();
+          window.location.replace("https://myplaneer.com/plans");
+        };
+      });
+    </script>
+  </div>
 </body>
+
 </html>

@@ -62,7 +62,7 @@ router.get("/performance", auth_middleware_1.auth, auth_middleware_1.isAdmin, us
 router.get("/my-proxyset-users", auth_middleware_1.auth, user_controller_1.GetProxyUsers);
 router.put("/proxyset/update-index", auth_middleware_1.auth, user_controller_1.updateProxyUserAtIndexController);
 // ✅ Create Proxy User
-router.post("/proxy/create", auth_middleware_1.auth, user_controller_1.createProxyUserAtIndexController);
+router.post("/proxyset", auth_middleware_1.auth, user_controller_1.ProxysetController);
 router.delete("/remove", auth_middleware_1.auth, user_controller_1.removeProxyUserController);
 //new password reset routes
 router.post("/forgot-password", user_controller_1.newforgotPassword);
