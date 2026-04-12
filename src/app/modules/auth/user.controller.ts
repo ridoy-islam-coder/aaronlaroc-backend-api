@@ -1,5 +1,5 @@
 import { NextFunction, Request, Response } from "express";
-import { adminDeleteUserService, adminEmailService, adminLoginService, adminUpdateUserService, codeVerification,   existingUser,   getAllOwnUserDataService,   getAllUserDataService,  getallUsers, getCountsService, getNewUsersLast10DaysService, getprofileService, getProxysetData, getProxyUsersService, getUserFullProfileService,getUsersWhoAddedMeAsProxyService,getUsersWhoSetMyProxyService,LoginInUser,  ProxysetService, removeProxyUserService, searchUsersService,  updatePassword, updateProxyUserAtIndexService, updateUserService, UserAnalysisService, userSelfUpdateService } from "./user.service";
+import { adminDeleteUserService, adminEmailService, adminLoginService, adminUpdateUserService, codeVerification,   deleteProxyFromUserService,   existingUser,   getAllOwnUserDataService,   getAllUserDataService,  getallUsers, getCountsService, getNewUsersLast10DaysService, getprofileService, getProxysetData, getProxyUsersService, getUserFullProfileService,getUsersWhoAddedMeAsProxyService,getUsersWhoSetMyProxyService,LoginInUser,  ProxysetService,  searchUsersService,  updatePassword, updateProxyUserAtIndexService, updateUserService, UserAnalysisService, userSelfUpdateService } from "./user.service";
 import { ProxyUser } from "./user.interface";
 import { User } from "./user.model";
 import { logSuccess } from "../../../helpers/successLogger";
@@ -19,8 +19,8 @@ export const removeProxyUserController = async (
   next: NextFunction
 ) => {
   try {
-    const result = await removeProxyUserService(req);
-    res.json(result);
+    const result = await deleteProxyFromUserService(req);
+  res.status(result.status === "success" ? 200 : 400).json(result);
   } catch (error) {
     next(error);
   }

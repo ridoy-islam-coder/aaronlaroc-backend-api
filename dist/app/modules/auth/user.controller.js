@@ -15,8 +15,8 @@ const bcryptjs_1 = __importDefault(require("bcryptjs"));
 const emailHelper_1 = require("../../../helpers/emailHelper");
 const removeProxyUserController = async (req, res, next) => {
     try {
-        const result = await (0, user_service_1.removeProxyUserService)(req);
-        res.json(result);
+        const result = await (0, user_service_1.deleteProxyFromUserService)(req);
+        res.status(result.status === "success" ? 200 : 400).json(result);
     }
     catch (error) {
         next(error);

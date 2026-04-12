@@ -56,7 +56,19 @@ const userSchema =  new Schema<IUser>({
          default: 'https://i.ibb.co/z5YHLV9/profile.png',
     },
    
-     proxysetId: [{ type: Types.ObjectId, ref: "User" }],
+    //  proxysetId: [{ type: Types.ObjectId, ref: "User" } ],
+proxysetId: [
+  {
+    index: {
+      type: Number,
+    },
+    proxy: {
+      type: Types.ObjectId,
+      ref: "User",
+      default: null,
+    },
+  },
+],
 
        stripeCustomerId: {
                type: String,
@@ -86,17 +98,7 @@ const userSchema =  new Schema<IUser>({
 //   }
 // });
 
-// // Optional: method to compare password during login
-// userSchema.methods.comparePassword = async function (candidatePassword: string) {
-//   return bcrypt.compare(candidatePassword, this.password);
-// };
-// // Remove password from returned JSON
-// userSchema.set('toJSON', {
-//   transform: (doc, ret) => {
-//     delete ret.password;
-//     return ret;
-//   }
-// });
+
 
 
 export const User = model<IUser>("User", userSchema)

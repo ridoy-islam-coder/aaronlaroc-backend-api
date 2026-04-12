@@ -138,38 +138,43 @@ export const getprofileService =async (req:Request) => {
   }
 }
 
-
-
-
-
-
- // মূল ইউজারের proxysetId অনুযায়ী ইউজারদের ডেটা আনা
 export const getProxyUsersService = async (req: Request) => {
   try {
-    const user_id = req.user?.id; // token middleware থেকে আসা
-
-   
-    const user = await User.findById(user_id)
-      .populate("proxysetId", "firstName lastName email imgUrl role")
-      .exec();
-
-    if (!user) {
-      return { status: "failed", message: "User not found" };
+    const userId = req.user?.id;
+    
+    // Step 1: populate ছাড়া raw data দেখো
+    const userRaw = await User.findById(userId);
+    console.log("Raw proxysetId:", JSON.stringify(userRaw?.proxysetId));
+    
+    // Step 2: proxy ID গুলো manually find করো
+    if (userRaw?.proxysetId) {
+      for (const item of userRaw.proxysetId as any[]) {
+        console.log("Looking for proxy ID:", item.proxy);
+        const proxyUser = await User.findById(item.proxy);
+        console.log("Found proxy user:", proxyUser ? proxyUser.email : "NOT FOUND");
+      }
     }
+
+    const user = await User.findById(userId).populate({
+      path: "proxysetId.proxy",
+      model: "User",
+      select: "firstName lastName email imgUrl",
+    });
+
+    const result = (user?.proxysetId as any[]).map((item: any, index: number) => ({
+      index,
+      data: item || null,
+    }));
 
     return {
       status: "success",
       message: "Proxy users fetched successfully",
-      data: user.proxysetId
+      data: result,
     };
-  } catch (error) {
-    return { status: "failed", data: error };
+  } catch (error: any) {
+    return { status: "failed", message: error.message };
   }
 };
-
-
-
-
 
 export const updateProxyUserAtIndexService = async (req: Request) => {
   try {
@@ -212,72 +217,97 @@ export const updateProxyUserAtIndexService = async (req: Request) => {
 
 
 
-export const removeProxyUserService = async (req: Request) => {
+// export const removeProxyUserService = async (req: Request) => {
+//   try {
+//     const userId = req.user?.id; // ✅ token থেকে আসবে
+//     const { proxyId } = req.body;
+
+//     // ✅ Auth check
+//     if (!userId) {
+//       return {
+//         status: "failed",
+//         message: "Unauthorized",
+//       };
+//     }
+
+//     // ✅ Validate proxyId
+//     if (!proxyId || !Types.ObjectId.isValid(proxyId)) {
+//       return {
+//         status: "failed",
+//         message: "Invalid proxyId",
+//       };
+//     }
+
+//     const user = await User.findById(userId);
+
+//     if (!user) {
+//       return {
+//         status: "failed",
+//         message: "User not found",
+//       };
+//     }
+
+//     // ✅ Check proxy আছে কিনা
+//     if (!user.proxysetId.includes(proxyId)) {
+//       return {
+//         status: "failed",
+//         message: "Proxy not found in your list",
+//       };
+//     }
+
+//     // ✅ Remove proxy
+//     user.proxysetId = user.proxysetId.filter(
+//       (id: any) => id.toString() !== proxyId
+//     );
+
+//     await user.save();
+
+//     return {
+//       status: "success",
+//       message: "Proxy removed successfully",
+//       data: user.proxysetId,
+//     };
+//   } catch (error: any) {
+//     console.error(error);
+
+//     return {
+//       status: "failed",
+//       message: "Something went wrong",
+//       error: error.message,
+//     };
+//   }
+// };
+
+export const deleteProxyFromUserService = async (req: Request) => {
   try {
-    const userId = req.user?.id; // ✅ token থেকে আসবে
-    const { proxyId } = req.body;
+    const userId = req.user?.id;
+    const { proxyId } = req.body; // ← params থেকে body তে পরিবর্তন
 
-    // ✅ Auth check
-    if (!userId) {
-      return {
-        status: "failed",
-        message: "Unauthorized",
-      };
-    }
-
-    // ✅ Validate proxyId
-    if (!proxyId || !Types.ObjectId.isValid(proxyId)) {
-      return {
-        status: "failed",
-        message: "Invalid proxyId",
-      };
-    }
-
-    const user = await User.findById(userId);
-
-    if (!user) {
-      return {
-        status: "failed",
-        message: "User not found",
-      };
-    }
-
-    // ✅ Check proxy আছে কিনা
-    if (!user.proxysetId.includes(proxyId)) {
-      return {
-        status: "failed",
-        message: "Proxy not found in your list",
-      };
-    }
-
-    // ✅ Remove proxy
-    user.proxysetId = user.proxysetId.filter(
-      (id: any) => id.toString() !== proxyId
+    const result = await User.findByIdAndUpdate(
+      userId,
+      {
+        $pull: {
+          proxysetId: { _id: new Types.ObjectId(proxyId) },
+        },
+      },
+      { new: true }
     );
 
-    await user.save();
+    if (!result) {
+      return { status: "failed", message: "User not found" };
+    }
 
     return {
       status: "success",
-      message: "Proxy removed successfully",
-      data: user.proxysetId,
+      message: "Proxy deleted successfully",
     };
   } catch (error: any) {
-    console.error(error);
-
     return {
       status: "failed",
-      message: "Something went wrong",
-      error: error.message,
+      message: error.message,
     };
   }
 };
-
-
-
-
-
-
 
 export const adminDeleteUserService = async (req: Request) => {
   try {
@@ -574,36 +604,13 @@ export const searchUsersService = async (searchTerm: string) => {
 // };import mongoose from "mongoose";
 
 
-
 export const ProxysetService = async (req: any) => {
   try {
     const userId = req.user?.id;
-    const proxysetId = req.body?.proxysetId;
-    const index = req.body?.index;
+    const { proxysetId, index } = req.body;
 
     if (!userId) {
       return { status: "failed", message: "Unauthorized" };
-    }
-
-    if (!proxysetId || index === undefined) {
-      return {
-        status: "failed",
-        message: "proxysetId and index required",
-      };
-    }
-
-    if (!mongoose.Types.ObjectId.isValid(proxysetId)) {
-      return {
-        status: "failed",
-        message: "Invalid proxysetId",
-      };
-    }
-
-    if (index < 0) {
-      return {
-        status: "failed",
-        message: "Invalid index",
-      };
     }
 
     const user = await User.findById(userId);
@@ -612,23 +619,34 @@ export const ProxysetService = async (req: any) => {
       return { status: "failed", message: "User not found" };
     }
 
-    const proxyObjectId = new mongoose.Types.ObjectId(proxysetId);
+    const proxyObjectId = new Types.ObjectId(proxysetId);
 
-    // ✅ ensure array exists
     if (!Array.isArray(user.proxysetId)) {
       user.proxysetId = [];
     }
 
-    // 🚀 IMPORTANT FIX:
-    // only update that index, do NOT clear array
-    user.proxysetId[index] = proxyObjectId;
+    const existingIndex = user.proxysetId.findIndex(
+      (item: any) => item?.index === index
+    );
+
+    if (existingIndex !== -1) {
+      user.proxysetId[existingIndex].proxy = proxyObjectId;
+    } else {
+      user.proxysetId.push({
+        index,
+        proxy: proxyObjectId,
+      });
+    }
 
     await user.save();
 
     return {
       status: "success",
       message: `Proxy updated at index ${index}`,
-      data: user.proxysetId,
+      data: user.proxysetId.map((item: any) => ({
+        index: item.index,
+        data: item.proxy || null,
+      })),
     };
   } catch (error: any) {
     return {
@@ -637,7 +655,6 @@ export const ProxysetService = async (req: any) => {
     };
   }
 };
-
 
 
 export const getProxysetData = async (userId: string) => {

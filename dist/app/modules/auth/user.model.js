@@ -49,7 +49,19 @@ const userSchema = new mongoose_1.Schema({
         type: String,
         default: 'https://i.ibb.co/z5YHLV9/profile.png',
     },
-    proxysetId: [{ type: mongoose_1.Types.ObjectId, ref: "User" }],
+    //  proxysetId: [{ type: Types.ObjectId, ref: "User" } ],
+    proxysetId: [
+        {
+            index: {
+                type: Number,
+            },
+            proxy: {
+                type: mongoose_1.Types.ObjectId,
+                ref: "User",
+                default: null,
+            },
+        },
+    ],
     stripeCustomerId: {
         type: String,
         default: '',
@@ -73,17 +85,6 @@ const userSchema = new mongoose_1.Schema({
 //     next();
 //   } catch (err) {
 //     next(err);
-//   }
-// });
-// // Optional: method to compare password during login
-// userSchema.methods.comparePassword = async function (candidatePassword: string) {
-//   return bcrypt.compare(candidatePassword, this.password);
-// };
-// // Remove password from returned JSON
-// userSchema.set('toJSON', {
-//   transform: (doc, ret) => {
-//     delete ret.password;
-//     return ret;
 //   }
 // });
 exports.User = (0, mongoose_1.model)("User", userSchema);

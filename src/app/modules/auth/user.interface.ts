@@ -22,7 +22,7 @@ export interface IUser extends Document {
     stripeCustomerId:string;
     userPercentage: number;
     role: Role;
-    proxysetId: Types.ObjectId[];
+    proxysetId: {index: number; proxy: Types.ObjectId | null;}[];
     createdAt: Date;
     updatedAt: Date;
     
